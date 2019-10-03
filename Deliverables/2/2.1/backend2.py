@@ -13,6 +13,9 @@ import json
 def sort(special_json_list):
 
     _insertion_sort(special_json_list, len(special_json_list))
+
+    _format_list(special_json_list)
+    
     return special_json_list
 
 def _insertion_sort(special_json_list, n):
@@ -92,6 +95,33 @@ def _type(thing):
                     return "string", thing
                 else:
                     print("not a string, json, or float")
+
+"""
+    Returns True if a string of type "number" is an int
+""" 
+def _is_int(number):
+    a = float(number)
+    b = int(a)
+    return a == b
+    
+def _format_list(special_json_list):
+    for i in range(len(special_json_list)):
+        thing = special_json_list[i]
+        type_thing, _ = _type(thing)
+        if type_thing == "number":
+            if _is_int(thing):
+                special_json_list[i] = int(thing)
+            else:
+                special_json_list[i] = float(thing)
+
+        elif type_thing == "json":
+            special_json_list[i] = json.loads(thing)
+
+
+        else:
+            special_json_list[i] = thing
+
+
 
 
 
