@@ -1,5 +1,6 @@
 import sys
 from backend2 import sort
+import json
 
 special_json_list = []
 
@@ -17,4 +18,4 @@ sorted_list = sort(special_json_list)
 # for i in range(1):
 #     sorted_list[i] = float(special_json_list[i])
 
-sys.stdout.write(f'{sorted_list}')
+sys.stdout.write(json.dumps(special_json_list))

@@ -15,7 +15,7 @@ def sort(special_json_list):
     _insertion_sort(special_json_list, len(special_json_list))
 
     _format_list(special_json_list)
-    
+
     return special_json_list
 
 def _insertion_sort(special_json_list, n):
@@ -116,6 +116,8 @@ def _format_list(special_json_list):
 
         elif type_thing == "json":
             special_json_list[i] = json.loads(thing)
+            # special_json_list[i] = json.dumps(temp)
+            print(type(special_json_list[i]))
 
 
         else:
