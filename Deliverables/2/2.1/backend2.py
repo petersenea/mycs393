@@ -1,49 +1,32 @@
 import json
 import functools
 
-# start STDIN
-#~~~~~~~~~~~~~~REMOVE FROM FINAL SUBMIT~~~~~~~~~~~~~~~~~
-# f = open("input0", "r")
-# if f.mode == "r":
-#     special_json_list = f.read().split("\n")
-#     print("Input list:")
-#     print(special_json_list)
-
-
 
 def sort(special_json_list):
 
-    _insertion_sort(special_json_list, len(special_json_list))
-
-    # special_json_list = sorted(special_json_list, key=functools.cmp_to_key(_cmp_is_greater))
+    _insertion_sort(special_json_list)
 
     _format_list(special_json_list)
 
     return special_json_list
 
-def _insertion_sort(special_json_list, n):
-    
-    if n <= 1:
-        return
-    
-    _insertion_sort(special_json_list, n-1)
-    last = special_json_list[n-1]
-    j = n - 2
 
-    while j >= 0 and _is_greater(special_json_list[j], last):
-        special_json_list[j+1] = special_json_list[j]
-        j = j - 1
+def _insertion_sort(special_json_list):
     
-    special_json_list[j+1] = last
+    for i in range(1,len(special_json_list)):
+
+        value = special_json_list[i]
+
+        j = i - 1
+        while j >= 0 and _is_greater(special_json_list[j], value):
+            special_json_list[j+1] = special_json_list[j]
+            j -= 1
+        special_json_list[j+1] = value
 
 def _is_greater(a, b):
-    # print(f'a: {a}')
-    # print(f'b: {b}')
 
     type_a, a = _type(a)
-    # print(f'done a {type_a}')
     type_b, b = _type(b)
-    # print(f'done b {type_b}')
 
     if type_a == "string":
         if type_b == "string":
@@ -74,7 +57,9 @@ def _is_greater(a, b):
             return True
         elif type_b == "json":
             return _is_greater(a["name"], b["name"])
- 
+"""
+    Returns the type of the input (one of "json", "number", or "string") and the input converted from string to its time
+"""
 def _type(thing):
     if isinstance(thing, dict):
         return "json", thing
