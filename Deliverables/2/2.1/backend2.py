@@ -1,4 +1,5 @@
 import json
+import functools
 
 # start STDIN
 #~~~~~~~~~~~~~~REMOVE FROM FINAL SUBMIT~~~~~~~~~~~~~~~~~
@@ -13,6 +14,8 @@ import json
 def sort(special_json_list):
 
     _insertion_sort(special_json_list, len(special_json_list))
+
+    # special_json_list = sorted(special_json_list, key=functools.cmp_to_key(_cmp_is_greater))
 
     _format_list(special_json_list)
 
@@ -70,9 +73,8 @@ def _is_greater(a, b):
         elif type_b == "number":
             return True
         elif type_b == "json":
-            # print(type(a["name"]))
             return _is_greater(a["name"], b["name"])
-    
+ 
 def _type(thing):
     if isinstance(thing, dict):
         return "json", thing
@@ -104,6 +106,9 @@ def _is_int(number):
     b = int(a)
     return a == b
     
+"""
+    Converts all of the elements of special_json_list into their appropriate types
+"""
 def _format_list(special_json_list):
     for i in range(len(special_json_list)):
         thing = special_json_list[i]
@@ -119,12 +124,6 @@ def _format_list(special_json_list):
             # special_json_list[i] = json.dumps(temp)
             print(type(special_json_list[i]))
 
-
         else:
             special_json_list[i] = thing
 
-
-
-
-
-# print(f"Output List:  {sort(special_json_list)}")
