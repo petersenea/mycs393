@@ -13,7 +13,6 @@ import json
 def sort(special_json_list):
 
     _insertion_sort(special_json_list, len(special_json_list))
-
     return special_json_list
 
 def _insertion_sort(special_json_list, n):
@@ -32,9 +31,13 @@ def _insertion_sort(special_json_list, n):
     special_json_list[j+1] = last
 
 def _is_greater(a, b):
+    # print(f'a: {a}')
+    # print(f'b: {b}')
 
     type_a, a = _type(a)
+    # print(f'done a {type_a}')
     type_b, b = _type(b)
+    # print(f'done b {type_b}')
 
     if type_a == "string":
         if type_b == "string":
@@ -64,6 +67,7 @@ def _is_greater(a, b):
         elif type_b == "number":
             return True
         elif type_b == "json":
+            # print(type(a["name"]))
             return _is_greater(a["name"], b["name"])
     
 def _type(thing):
@@ -79,9 +83,10 @@ def _type(thing):
 
             try:
                 json_obj = json.loads(thing)
+
                 return "json", json_obj
             
-            except:
+            except ValueError:
 
                 if type(thing) == str:
                     return "string", thing
