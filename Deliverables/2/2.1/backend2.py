@@ -26,18 +26,21 @@ def _insertion_sort(special_json_list):
         value = special_json_list[i]
 
         j = i - 1
+
         while j >= 0 and _is_greater(special_json_list[j], value):
             special_json_list[j+1] = special_json_list[j]
             j -= 1
+
         special_json_list[j+1] = value
 
 
 
 """
-    Returns True if a is greater than b, False otherwise
+    Returns True if a is greater than b, False otherwise, used recursively on json objects
 """
 def _is_greater(a, b):
 
+    # determine the types of a and b, and convert them to their types
     type_a, a = _type(a)
     type_b, b = _type(b)
 
@@ -46,6 +49,8 @@ def _is_greater(a, b):
         # both a and b are jsons, so run _is_greater on their "name" values recursively
         if type_a == 3:
             return _is_greater(a["name"], b["name"])
+        
+        # both a and b are either strings or numbers, use python's > function
         else:
             return a > b
 
@@ -56,7 +61,10 @@ def _is_greater(a, b):
 
 
 """
-    Returns the type of the input (one of 1 (for numbers), 2 (for strings), or 3 (for jsons)) and the input converted from string or dict to its type
+    Returns the type of the input 
+        (one of 1 (for numbers), 2 (for strings), or 3 (for jsons)) 
+    AND the input converted from string or dict to its type 
+        (one of float, string, or json)
 """
 def _type(thing):
 
