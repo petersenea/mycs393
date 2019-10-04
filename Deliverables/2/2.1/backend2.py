@@ -8,20 +8,11 @@ import functools
     sorts and formats special_json_list
 """
 def sort(special_json_list):
-    special_json_list[0] = _type(special_json_list[0])
-    for i in range(1,len(special_json_list)):
-
-        value = _type(special_json_list[i])
-
-        j = i - 1
-
-        while j >= 0 and _is_greater(special_json_list[j], value):
-            special_json_list[j+1] = special_json_list[j]
-            j -= 1
-
-        special_json_list[j+1] = value
-
+    special_json_list = [_type_convert(x) for x in special_json_list]
+    special_json_list.sort(key = functools.cmp_to_key(_is_greater))
     return special_json_list
+
+
 
 """
     ########### private helper functions ##########
@@ -31,9 +22,9 @@ def sort(special_json_list):
 def sortOrder(item):
     if isinstance(item, float) or isinstance(item, int):
         return 1
-    if isinstance(item, str):
+    elif isinstance(item, str):
         return 2
-    if isinstance(item, dict):
+    elif isinstance(item, dict):
         return 3
     else:
         print(type(item))
@@ -48,22 +39,30 @@ def _is_greater(a, b):
     if order_a == order_b:
 
         # both a and b are jsons, so run _is_greater on their "name" values recursively
-        if order_a == 3:
+        if isinstance(a, dict):
             return _is_greater(a["name"], b["name"])
         
         # both a and b are either strings or numbers, use python's > function
         else:
-            return a > b
+            if a > b:
+                return 1
+            elif a == b:
+                return 0
+            else:
+                return -1
 
     # a and b are different types and thus follow type hierarchy of json > string > number
     else:
-        return order_a > order_b
+        if order_a > order_b:
+            return 1
+        else:
+            return -1
 
 """
     Returns True if a is greater than b, False otherwise, used recursively on json objects
 """
 
-def _type(thing):
+def _type_convert(thing):
 
     # check if thing is a dict, thus a json
     if isinstance(thing, dict):
@@ -79,30 +78,7 @@ def _type(thing):
     else:
         print('Error, unexpected', thing)
 
-'''
-    else:
 
-        # check if string thing is a float, thus a number
-        try:
-            float(thing)
-            return float(thing)
-
-        except (TypeError, ValueError):
-
-            # check if string thing is a json object, thus a json
-            try:
-                json_obj = json.loads(thing)
-
-                return json_obj
-            
-            except ValueError:
-
-                # check if string thing is a string, not strictly necessary but is useful for clear code
-                if type(thing) == str:
-                    return thing
-                else:
-                    print("not a string, json, or float")
-'''
 def _is_float(thing):
     try:
         float(thing)
@@ -265,6 +241,22 @@ def _is_greater(a, b):
         return type_a > type_b
 '''
 
+'''
+    special_json_list[0] = _type(special_json_list[0])
+    for i in range(1,len(special_json_list)):
+
+        value = _type(special_json_list[i])
+
+        j = i - 1
+
+        while j >= 0 and _is_greater(special_json_list[j], value):
+            special_json_list[j+1] = special_json_list[j]
+            j -= 1
+
+        special_json_list[j+1] = value
+
+    return special_json_list
+    '''
 
 '''
 def _type(thing):
@@ -306,4 +298,30 @@ def _is_int(number):
     a = float(number)
     b = int(a)
     return a == b
+'''
+
+
+'''
+    else:
+
+        # check if string thing is a float, thus a number
+        try:
+            float(thing)
+            return float(thing)
+
+        except (TypeError, ValueError):
+
+            # check if string thing is a json object, thus a json
+            try:
+                json_obj = json.loads(thing)
+
+                return json_obj
+            
+            except ValueError:
+
+                # check if string thing is a string, not strictly necessary but is useful for clear code
+                if type(thing) == str:
+                    return thing
+                else:
+                    print("not a string, json, or float")
 '''
