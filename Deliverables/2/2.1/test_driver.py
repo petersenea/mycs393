@@ -14,10 +14,11 @@ for i in range(10):
     
     special_json_list.append(var)
 
-sorted_list = sort(special_json_list)
+sorted_list = json.loads(sort(special_json_list))
 
 for i in sorted_list:
+    print(i)
     print(type(i))
 
-# json.dump(sorted_list, sys.stdout)
-sys.stdout.write(sorted_list)
+json.dump(sorted_list, sys.stdout)
+# sys.stdout.write(sorted_list)
