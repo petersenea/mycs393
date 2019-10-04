@@ -20,5 +20,5 @@ for i in sorted_list:
     print(i)
     print(type(i))
 
-json.dump(sorted_list, sys.stdout)
+json.dump(sorted_list, sys.stdout, ensure_ascii=False)
 # sys.stdout.write(sorted_list)
