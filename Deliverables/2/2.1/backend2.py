@@ -17,14 +17,16 @@ def sort(special_json_list):
     # #     print(type(special_json_list[i]))
 
 
-    print(type(special_json_list[0]))
-    special_json_list = [json.dumps(thing) for thing in special_json_list]
-    print(type(special_json_list[0]))
+    # print(type(special_json_list[0]))
+    # special_json_list = [json.dumps(thing) for thing in special_json_list]
+    # print(type(special_json_list[0]))
 
-    special_json_list = [json.loads(thing) for thing in special_json_list]
-    print(type(special_json_list[0]))
+    special_json_list = json.dumps(special_json_list)
 
-    
+    # special_json_list = [json.loads(thing) for thing in special_json_list]
+    # print(type(special_json_list[0]))
+
+
     # for i in range(len(special_json_list)):
     #     print(type(special_json_list[i]))
         
