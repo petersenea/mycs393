@@ -16,5 +16,8 @@ for i in range(10):
 
 sorted_list = sort(special_json_list)
 
+for i in sorted_list:
+    print(type(i))
+
 # json.dump(sorted_list, sys.stdout)
-sys.stdout.write(f'{sorted_list}')
+sys.stdout.write(sorted_list)
