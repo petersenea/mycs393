@@ -70,6 +70,16 @@ def _type(thing):
         return thing
     elif thing.isdigit():
         return int(thing)
+    elif _is_float(thing):
+        return float(thing)
+    elif _is_json(thing):
+        return json.loads(thing)
+    elif isinstance(thing, str):
+        return thing
+    else:
+        print('Error, unexpected', thing)
+
+'''
     else:
 
         # check if string thing is a float, thus a number
@@ -92,6 +102,20 @@ def _type(thing):
                     return thing
                 else:
                     print("not a string, json, or float")
+'''
+def _is_float(thing):
+    try:
+        float(thing)
+        return True
+    except (TypeError, ValueError):
+        return False
+
+def _is_json(thing):
+    try:
+        json_obj = json.loads(thing)
+        return True            
+    except ValueError:
+        return False
 
 """
     Returns the type of the input 
