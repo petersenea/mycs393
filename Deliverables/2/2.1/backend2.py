@@ -63,10 +63,8 @@ def _type_convert(thing):
     # check if thing is a dict, thus a json
     if isinstance(thing, dict):
         return thing
-    elif thing.isdigit():
-        return int(thing)
-    elif _is_float(thing):
-        return float(thing)
+    elif _is_number(thing):
+        return _to_float_or_int(float(thing))
     elif _is_json(thing):
         return json.loads(thing)
     elif isinstance(thing, str):
@@ -74,8 +72,13 @@ def _type_convert(thing):
     else:
         print('Error, unexpected', thing)
 
+def _to_float_or_int(thing):
+    if thing.is_integer():
+        return int(thing)
+    else:
+        return thing
 
-def _is_float(thing):
+def _is_number(thing):
     try:
         float(thing)
         return True
