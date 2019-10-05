@@ -43,7 +43,7 @@ def sort(special_json_list):
 def _sort_order(item):
     if isinstance(item, float) or isinstance(item, int):
         return 1
-    elif isinstance(item) == str or type(item) == 'unicode':
+    elif isinstance(item, str) or type(item) == 'unicode':
         return 2
     elif isinstance(item, dict):
         return 3
