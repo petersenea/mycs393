@@ -41,7 +41,7 @@ def sort(special_json_list):
 
 
 def _sort_order(item):
-    print(f'{item}: {type(item)}')
+    # print(f'{item}: {type(item)}')
     if isinstance(item, float) or isinstance(item, int):
         return 1
     elif isinstance(item, str) or isinstance(item, 'unicode'):
