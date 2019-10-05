@@ -49,7 +49,7 @@ def _sort_order(item):
         return 3
     else:
         # print(type(item))
-        print("hello")
+        print(item)
         # pass
 
 
