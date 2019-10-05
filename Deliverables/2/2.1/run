@@ -1,4 +1,4 @@
 #!/bin/bash
 
 
-python ../Deliverables/2/2.1/test_driver.py
+python3 ../Deliverables/2/2.1/test_driver.py
