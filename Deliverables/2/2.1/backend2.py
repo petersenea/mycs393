@@ -21,7 +21,6 @@ def sort(special_json_list):
 
 
 def _sort_order(item):
-    # print(f'{item}: {type(item)}')
     if isinstance(item, float) or isinstance(item, int):
         return 1
     elif isinstance(item, str):
@@ -29,9 +28,7 @@ def _sort_order(item):
     elif isinstance(item, dict):
         return 3
     else:
-        # print(type(item))
-        print(item)
-        # pass
+        print(type(item))
 
 
 def _is_greater(a, b):
@@ -75,7 +72,6 @@ def _type_convert(thing):
         return thing
     else:
         print('Error, unexpected', thing)
-        # pass
 
 def _to_float_or_int(thing):
     if thing.is_integer():
