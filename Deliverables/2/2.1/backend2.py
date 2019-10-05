@@ -11,25 +11,7 @@ def sort(special_json_list):
     special_json_list = [_type_convert(x) for x in special_json_list]
     special_json_list.sort(key = functools.cmp_to_key(_is_greater))
 
-    # for i in range(len(special_json_list)):
-    #     print(type(special_json_list[i]))
-    # #     special_json_list[i] = json.dumps(special_json_list[i])
-    # #     print(type(special_json_list[i]))
-
-
-    # print(type(special_json_list[0]))
-    # special_json_list = [json.dumps(thing) for thing in special_json_list]
-    # print(type(special_json_list[0]))
-
-    special_json_list = json.dumps(special_json_list, ensure_ascii=False)
-
-    # special_json_list = [json.loads(thing) for thing in special_json_list]
-    # print(type(special_json_list[0]))
-
-
-    # for i in range(len(special_json_list)):
-    #     print(type(special_json_list[i]))
-        
+    special_json_list = json.dumps(special_json_list)
 
     return special_json_list
 
