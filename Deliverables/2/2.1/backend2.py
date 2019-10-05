@@ -2,8 +2,6 @@ import json
 import functools
 
 
-
-
 """
     sorts and formats special_json_list
 """
@@ -100,14 +98,3 @@ def _is_json(thing):
         return False
 
 
-
-
-"""
-    Returns True if a string of type "number" is an int
-""" 
-'''
-def _is_int(number):
-    a = float(number)
-    b = int(a)
-    return a == b
-'''
