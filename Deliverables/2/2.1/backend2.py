@@ -48,7 +48,9 @@ def _sort_order(item):
     elif isinstance(item, dict):
         return 3
     else:
-        print(type(item))
+        # print(type(item))
+        print("hello")
+        # pass
 
 
 def _is_greater(a, b):
@@ -92,6 +94,7 @@ def _type_convert(thing):
         return thing
     else:
         print('Error, unexpected', thing)
+        # pass
 
 def _to_float_or_int(thing):
     if thing.is_integer():
