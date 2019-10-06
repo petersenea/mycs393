@@ -28,5 +28,6 @@ list_sorted_lists = [sort(x) for x in split_json_lists]
 # sorted_list = original_json_obj_list
 
 
+
 sorted_list = json.dumps(list_sorted_lists)
 sys.stdout.write(sorted_list)
