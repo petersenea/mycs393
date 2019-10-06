@@ -14,7 +14,6 @@ def sort(special_json_list):
     return special_json_list
 
 
-
 """
     ########### private helper functions ##########
 """
