@@ -1,7 +1,13 @@
 import sys
 import json
-from backend import sort
+# from sys.path import sort
+# from "../deliverables/2/2.1/backend" import sort
 from math import floor
+
+sys.path.append('../2.1')
+from backend import sort
+
+
 """
 original_json_obj_list = []
 temp_json = ""
@@ -33,7 +39,7 @@ sorted_list = json.dumps(list_sorted_lists)
 sys.stdout.write(sorted_list)
 """
 
-"""
+
 
 # holds all the objects read from stdin
 original_json_obj_list = []
@@ -65,9 +71,9 @@ list_sorted_lists = [sort(x) for x in split_json_lists]
 sorted_list = json.dumps(list_sorted_lists)
 sys.stdout.write(sorted_list)
 
+
+
 """
-
-
 # holds all the objects read from stdin
 original_json_obj_list = []
 
@@ -97,3 +103,4 @@ list_sorted_lists = [sort(x) for x in split_json_lists]
 
 sorted_list = json.dumps(list_sorted_lists)
 sys.stdout.write(sorted_list)
+"""
