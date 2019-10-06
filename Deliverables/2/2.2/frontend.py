@@ -50,7 +50,7 @@ temp_json = ""
 
 
 for line in sys.stdin:
-    line = line.rstrip()
+    # line = line.rstrip()
 
     line_words = line.split()
 
