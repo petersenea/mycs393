@@ -6,35 +6,36 @@ from backend import sort
 special_json_list = []
 
 i = 0
-temp = ""
+temp_json = ""
+
+
 
 while i < 10:
     # remove newline character after each special json obj
     var = sys.stdin.readline().rstrip()
-    # finished_json = True
+
     if var != "":
-        if temp == "":
+        if temp_json == "":
             try:
                 obj = json.loads(var)
                 special_json_list.append(obj)
                 i+=1
             except:
-                # finished_json = False
-                temp += var
+                temp_json += var
                 try:
-                    obj = json.loads(temp)
+                    obj = json.loads(temp_json)
                     special_json_list.append(obj)
                     i+=1
-                    temp = ""
+                    temp_json = ""
                 except:
                     pass
         else:
-            temp += var
+            temp_json += var
             try:
-                obj = json.loads(temp)
+                obj = json.loads(temp_json)
                 special_json_list.append(obj)
                 i+=1
-                temp = ""
+                temp_json = ""
             except:
                 pass
 
