@@ -6,7 +6,7 @@ import functools
     sorts and formats special_json_list
 """
 def sort(special_json_list):
-    special_json_list = [_type_convert(x) for x in special_json_list]
+    # special_json_list = [_type_convert(x) for x in special_json_list]
     special_json_list.sort(key = functools.cmp_to_key(_is_greater))
 
     special_json_list = json.dumps(special_json_list)
@@ -59,38 +59,38 @@ def _is_greater(a, b):
         else:
             return -1
 
-def _type_convert(thing):
+# def _type_convert(thing):
 
-    # check if thing is a dict, thus a json
-    if isinstance(thing, dict):
-        return thing
-    elif _is_number(thing):
-        return _to_float_or_int(float(thing))
-    elif _is_json(thing):
-        return json.loads(thing)
-    elif isinstance(thing, str):
-        return thing
-    else:
-        print('Error, unexpected', thing)
+#     # check if thing is a dict, thus a json
+#     if isinstance(thing, dict):
+#         return thing
+#     elif _is_number(thing):
+#         return _to_float_or_int(float(thing))
+#     elif _is_json(thing):
+#         return json.loads(thing)
+#     elif isinstance(thing, str):
+#         return thing
+#     else:
+#         print('Error, unexpected', thing)
 
-def _to_float_or_int(thing):
-    if thing.is_integer():
-        return int(thing)
-    else:
-        return thing
+# def _to_float_or_int(thing):
+#     if thing.is_integer():
+#         return int(thing)
+#     else:
+#         return thing
 
-def _is_number(thing):
-    try:
-        float(thing)
-        return True
-    except (TypeError, ValueError):
-        return False
+# def _is_number(thing):
+#     try:
+#         float(thing)
+#         return True
+#     except (TypeError, ValueError):
+#         return False
 
-def _is_json(thing):
-    try:
-        json_obj = json.loads(thing)
-        return True            
-    except ValueError:
-        return False
+# def _is_json(thing):
+#     try:
+#         json_obj = json.loads(thing)
+#         return True            
+#     except ValueError:
+#         return False
 
 
