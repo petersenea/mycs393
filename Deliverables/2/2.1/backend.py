@@ -6,10 +6,9 @@ import functools
     sorts and formats special_json_list
 """
 def sort(special_json_list):
-    # special_json_list = [_type_convert(x) for x in special_json_list]
     special_json_list.sort(key = functools.cmp_to_key(_is_greater))
 
-    special_json_list = json.dumps(special_json_list)
+    # special_json_list = json.dumps(special_json_list)
 
     return special_json_list
 

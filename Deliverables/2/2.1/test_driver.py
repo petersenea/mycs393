@@ -24,6 +24,8 @@ while i < 10:
             pass
 
 sorted_list = sort(special_json_list)
+sorted_list = json.dumps(sorted_list)
+
 
 sys.stdout.write(sorted_list)
 
