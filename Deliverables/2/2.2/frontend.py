@@ -41,9 +41,9 @@ for line in sys.stdin:
 
     line_words = line.split()
 
-    for word in line_words:
+    for words in line_words:
 
-        temp_json += word
+        temp_json += " " + words
         try:
             obj = json.loads(temp_json)
             original_json_obj_list.append(obj)
