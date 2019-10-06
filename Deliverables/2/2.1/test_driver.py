@@ -11,7 +11,7 @@ temp_json = ""
 while num_objs < 10:
     # remove newline character after each special json obj
     var = sys.stdin.readline().rstrip()
-
+    
     if var != "":
 
         temp_json += var
