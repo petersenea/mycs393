@@ -8,15 +8,15 @@ temp_json = ""
 
 for line in sys.stdin:
     line = line.rstrip()
-    #if line != "":
+    if line != "":
 
-    temp_json += line
-    try:
-        obj = json.loads(temp_json)
-        original_json_obj_list.append(obj)
-        temp_json = ""
-    except:
-        pass
+        temp_json += line
+        try:
+            obj = json.loads(temp_json)
+            original_json_obj_list.append(obj)
+            temp_json = ""
+        except:
+            pass
 num_full_lists = floor(len(original_json_obj_list) / 10)
 split_json_lists = [original_json_obj_list[x:x+10] for x in range(0,num_full_lists*10, 10)]
 # for x in chunks:
