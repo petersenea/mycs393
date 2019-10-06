@@ -2,9 +2,49 @@ import sys
 from backend2 import sort
 import json
 
+"""
+########################## HELPER METHODS FOR CONVERTING STRING TO JSON ################################
+"""
+
+def _type_convert(thing):
+
+    # check if thing is a dict, thus a json
+    if isinstance(thing, dict):
+        return thing
+    elif _is_number(thing):
+        return _to_float_or_int(float(thing))
+    elif _is_json(thing):
+        return json.loads(thing)
+    elif isinstance(thing, str):
+        return thing
+    else:
+        print('Error, unexpected', thing)
+
+def _is_number(thing):
+    try:
+        float(thing)
+        return True
+    except (TypeError, ValueError):
+        return False
+
+def _to_float_or_int(thing):
+    if thing.is_integer():
+        return int(thing)
+    else:
+        return thing
+
+def _is_json(thing):
+    try:
+        json_obj = json.loads(thing)
+        return True            
+    except ValueError:
+        return False
+
+"""
+########################## START READING FROM STDIN ################################
+"""
 
 special_json_list = []
-
 
 i = 0
 temp = ""
@@ -15,41 +55,23 @@ while i < 10:
 
     if var != "":
         try:
-            json.loads(var)
-            special_json_list.append(var)
+            obj = json.loads(var)
+            special_json_list.append(obj)
             i+=1
         except:
             temp += var
             try:
-                json.loads(temp)
-                special_json_list.append(temp)
+                obj = json.loads(temp)
+                special_json_list.append(obj)
                 i+=1
                 temp = ""
-                # print("made a valid json")
             except:
-                # print("haven't made a json yet")
                 pass
-            # print("not a valid json")
-    
-sorted_list = sort(special_json_list)
 
-"""
-special_json_list = []
-# for i in range(10):
-    
-data = json.load(sys.stdin)
-special_json_list.append(obj)
+# special_json_list = [_type_convert(x) for x in special_json_list]
+# special_json_list = [json.loads(x) for x in special_json_list]
 
 sorted_list = sort(special_json_list)
-"""
-
-
-"""
-for event in ijson.parse(sys.stdin):
-    print(event)
-    special_json_list.append(event)
-
-sorted_list = sort(special_json_list)
-"""
 
 sys.stdout.write(sorted_list)
+
