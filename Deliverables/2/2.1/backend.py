@@ -15,6 +15,9 @@ def sort(special_json_list):
     ########### private helper functions ##########
 """
 
+"""
+    returns the placement order of an object by type only
+"""
 def _sort_order(item):
     if isinstance(item, float) or isinstance(item, int):
         return 1
@@ -25,7 +28,9 @@ def _sort_order(item):
     else:
         print(type(item))
 
-
+"""
+    compares elements to find order
+"""
 def _is_greater(a, b):
 
     # determine the types of a and b, and convert them to their types
