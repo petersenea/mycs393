@@ -1,7 +1,5 @@
 import sys
 import json
-# from sys.path import sort
-# from "../deliverables/2/2.1/backend" import sort
 from math import floor
 
 sys.path.append('../Deliverables/2/2.1')
@@ -17,20 +15,6 @@ def read_json_input():
         str_json += line
     return str_json
 
-"""
-    outputs the list of list of json objects as json
-"""
-def output_lists(list_sorted_lists):
-    sorted_list = json.dumps(list_sorted_lists)
-    sys.stdout.write(sorted_list)
-
-"""
-    divides the list of json objects into smaller lists of 10 json objects
-"""
-def create_ten_element_lists(special_json_list):
-    num_full_lists = floor(len(special_json_list) / 10)
-    split_json_lists = [special_json_list[x:x+10] for x in range(0,num_full_lists*10, 10)]
-    return split_json_lists
 
 """
     from the string compiled from the input extracts all json objects
@@ -46,6 +30,24 @@ def extract_objects(str_json):
         except:
             str_json = str_json[1:]
     return special_json_list
+
+
+"""
+    divides the list of json objects into smaller lists of 10 json objects
+"""
+def create_ten_element_lists(special_json_list):
+    num_full_lists = floor(len(special_json_list) / 10)
+    split_json_lists = [special_json_list[x:x+10] for x in range(0,num_full_lists*10, 10)]
+    return split_json_lists
+
+
+"""
+    outputs the list of lists of json objects as json
+"""
+def output_lists(list_sorted_lists):
+    sorted_list = json.dumps(list_sorted_lists)
+    sys.stdout.write(sorted_list)
+
 
 """
     Main function calls the helper functions to read the json input, extract json objects, create lists
