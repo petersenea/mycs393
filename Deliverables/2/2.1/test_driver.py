@@ -37,6 +37,7 @@ num_objs = 0
 temp_json_obj = ""
 temp_json_str = ""
 temp_json_num = ""
+can_load_json = False
 
 
 while num_objs < 10:
@@ -51,7 +52,16 @@ while num_objs < 10:
         elif char == '"' and temp_json_str != "":
             # finish creating a string
             temp_json_str += char
+            can_load_json = True
+        elif temp_json_str != "":
+            temp_json_str += char
         elif char == "{":
 
-        elif
-
+        elif can_load_json:
+            try:
+                obj = json.loads(temp_json)
+                special_json_list.append(obj)
+                num_objs += 1
+                temp_json = ""
+            except:
+                pass
