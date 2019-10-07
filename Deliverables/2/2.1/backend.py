@@ -3,7 +3,8 @@ import functools
 
 
 """
-    sorts and formats special_json_list
+    sorts special_json_list
+    * expects special_json_list to be a list of 10 special json objects
 """
 def sort(special_json_list):
     
@@ -29,7 +30,10 @@ def _sort_order(item):
         print(type(item))
 
 """
-    compares elements to find order
+    returns:
+        1 if a is greater than b
+        0 if a is equal to b
+        -1 if a is less than b
 """
 def _is_greater(a, b):
 
