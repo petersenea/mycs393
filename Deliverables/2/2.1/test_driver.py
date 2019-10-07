@@ -2,11 +2,8 @@ import sys
 import json
 from backend import sort
 
-<<<<<<< HEAD
 
 
-=======
->>>>>>> e5f5fbfe4007eecfac89c3d4a45c733b471ed9a8
 special_json_list = []
 
 num_objs = 0
