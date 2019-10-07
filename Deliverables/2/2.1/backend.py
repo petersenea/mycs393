@@ -8,7 +8,6 @@ import functools
 def sort(special_json_list):
     
     special_json_list.sort(key = functools.cmp_to_key(_is_greater))
-
     return special_json_list
 
 
