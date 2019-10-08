@@ -1,7 +1,6 @@
 import json
 import functools
 
-
 """
     sorts special_json_list
     * expects special_json_list to be a list of 10 special json objects
@@ -29,7 +28,9 @@ def _sort_order(item):
     else:
         print(type(item))
 
-"""
+""" _is_greater(a,b):
+    where:
+        a and b are speical json objects
     returns:
         1 if a is greater than b
         0 if a is equal to b

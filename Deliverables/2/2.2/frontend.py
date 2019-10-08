@@ -6,10 +6,23 @@ sys.path.append('../Deliverables/2/2.1')
 sys.path.append('../2.1')
 from backend import sort
 
+
+"""
+    Main function calls the helper functions to read the json input, extract json objects, create lists
+    containing 10 json objects each, sort the lists, and return the final json lists
+"""
+def main():
+    str_json = _read_json_input()
+    special_json_list = _extract_objects(str_json)
+    split_json_lists = _create_ten_element_lists(special_json_list)
+    list_sorted_lists = [sort(x) for x in split_json_lists]
+    _output_lists(list_sorted_lists)
+    
+
 """
     reads json input from stdin and compiles it into one string
 """
-def read_json_input():
+def _read_json_input():
     str_json = ""
     for line in sys.stdin:
         str_json += line
@@ -19,7 +32,7 @@ def read_json_input():
 """
     from the string compiled from the input extracts all json objects
 """
-def extract_objects(str_json):
+def _extract_objects(str_json):
     decoder = json.JSONDecoder()
     special_json_list = []
     while len(str_json)>0:
@@ -35,7 +48,7 @@ def extract_objects(str_json):
 """
     divides the list of json objects into smaller lists of 10 json objects
 """
-def create_ten_element_lists(special_json_list):
+def _create_ten_element_lists(special_json_list):
     num_full_lists = floor(len(special_json_list) / 10)
     split_json_lists = [special_json_list[x:x+10] for x in range(0,num_full_lists*10, 10)]
     return split_json_lists
@@ -44,21 +57,10 @@ def create_ten_element_lists(special_json_list):
 """
     outputs the list of lists of json objects as json
 """
-def output_lists(list_sorted_lists):
+def _output_lists(list_sorted_lists):
     sorted_list = json.dumps(list_sorted_lists)
     sys.stdout.write(sorted_list)
 
-
-"""
-    Main function calls the helper functions to read the json input, extract json objects, create lists
-    containing 10 json objects each, sort the lists, and return the final json lists
-"""
-def main():
-    str_json = read_json_input()
-    special_json_list = extract_objects(str_json)
-    split_json_lists = create_ten_element_lists(special_json_list)
-    list_sorted_lists = [sort(x) for x in split_json_lists]
-    output_lists(list_sorted_lists)
   
 if __name__== "__main__":
   main()
