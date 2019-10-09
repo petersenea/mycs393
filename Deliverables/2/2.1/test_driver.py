@@ -26,9 +26,14 @@ while len(str_json)>0 or num_objs<10:
         str_json = str_json[1:]
     
 
-# checks to make sure there are exactly 10 objects
+# if special_json_list has 10 objects, sort list
 if num_objs == 10:
     sorted_list = sort(special_json_list)
-    sorted_list = json.dumps(sorted_list)
 
-    sys.stdout.write(sorted_list)
+# else if special_json_list has more than 10 objects, truncate to 10, sort list
+elif num_objs > 10:
+    sorted_list = sort(special_json_list[:10])
+
+sorted_list = json.dumps(sorted_list)
+
+sys.stdout.write(sorted_list)
