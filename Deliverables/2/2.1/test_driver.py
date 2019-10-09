@@ -25,14 +25,8 @@ while len(str_json)>0 or num_objs<10:
     except:
         str_json = str_json[1:]
     
-
-# if special_json_list has 10 objects, sort list
-if num_objs == 10:
-    sorted_list = sort(special_json_list)
-
-# else if special_json_list has more than 10 objects, truncate to 10, sort list
-elif num_objs > 10:
-    sorted_list = sort(special_json_list[:10])
+# sorts the first 10 valid json read from stdin
+sorted_list = sort(special_json_list[:10])
 
 sorted_list = json.dumps(sorted_list)
 
