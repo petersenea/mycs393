@@ -178,7 +178,9 @@ class Board(object):
         else: return False
 
     def is_reachable(self, point, maybe_stone):
-        return 'not implemented'
+        # base case
+        return "not implemented"
+        
 
     def place(self, stone, point):
         if self.board_array[point[1]][point[0]] == self.EMPTY_STONE:
