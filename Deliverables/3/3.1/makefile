@@ -1,3 +1,3 @@
 practice:
 	-sudo apt-get install python3
-	pip install numpy
+	-sude apt-get install python-numpy
