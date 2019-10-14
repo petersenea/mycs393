@@ -1,6 +1,47 @@
 from abc import ABC, abstractmethod
 import numpy as np
 
+
+class BoardInterface(ABC):
+
+    def __init__(self):
+        super().__init__()
+
+    @abstractmethod
+    def is_occupied(self, point):
+        pass
+    
+    @abstractmethod
+    def does_occupy(self, stone, point):
+        pass
+
+    @abstractmethod
+    def is_reachable(self, point, maybe_stone):
+        pass
+    
+    @abstractmethod
+    def breadth_first(self, curr_stone, maybe_stone, queue, visited):
+        pass
+    
+    @abstractmethod
+    def valid_neighbors(self, point_x, point_y):
+        pass
+
+    @abstractmethod
+    def place(self, stone, point):
+        pass
+
+    @abstractmethod
+    def remove(self, stone, point):
+        pass
+
+    @abstractmethod
+    def get_points(self, maybe_stone):
+        pass
+
+"""
+    wrapper class that enforces contracts for the board class
+"""
 class WrapperBoard(object):
     BOARD_SIZE = 19
     STONES = ['B', 'W']
@@ -20,6 +61,9 @@ class WrapperBoard(object):
         
         self.ret_value = self._play_move(board, statement)
 
+    """
+        returns the contents of self.ret_value
+    """
     def ret(self):
         return self.ret_value
 
@@ -158,16 +202,13 @@ class WrapperBoard(object):
 
     
 
-class Board(object):
+class Board(BoardInterface):
     EMPTY_STONE = " "
-    BOARD_SIZE = 19
+    BOARD_SIZE = 19  
 
     def __init__(self, board_array):
         self.board_array = board_array
-    
-    """
-        point is a tuple of int
-    """
+        
     def is_occupied(self, point):
         if self.board_array[point[1]][point[0]] != self.EMPTY_STONE:
             return True
@@ -199,8 +240,6 @@ class Board(object):
             return False
         else:
             return self.breadth_first(curr_stone, maybe_stone, queue, visited)
-
-
     
     def valid_neighbors(self, point_x, point_y):
         valid_lst = []
@@ -213,8 +252,6 @@ class Board(object):
         if (point_y - 1) >= 0:
             valid_lst.append([point_x, point_y - 1])
         return valid_lst
-
-        
 
     def place(self, stone, point):
         if self.board_array[point[1]][point[0]] == self.EMPTY_STONE:
