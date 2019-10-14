@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import numpy as np
 
 class WrapperBoard(object):
     BOARD_SIZE = 19
@@ -193,7 +194,18 @@ class Board(object):
         else: return "I am just a board! I cannot remove what is not there!"
 
     def get_points(self, maybe_stone):
-        return 'not implemented'
+        np_array = np.array(self.board_array)
+
+        points = np.where(np_array == maybe_stone)
+             
+        points_coords = [self._create_point(points[1][i] + 1, points[0][i] + 1) for i in range(len(points[0]))]
+
+        print(points_coords)
+        return "blah"
+
+    def _create_point(self, point_x, point_y):
+        return str(point_x) + '-' + str(point_y) 
+
         
 
 
