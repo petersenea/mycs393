@@ -200,6 +200,8 @@ class Board(object):
              
         points_coords = [self._create_point(points[1][i] + 1, points[0][i] + 1) for i in range(len(points[0]))]
 
+        points_coords.sort()
+
         return points_coords
 
     def _create_point(self, point_x, point_y):
