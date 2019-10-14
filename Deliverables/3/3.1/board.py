@@ -183,37 +183,35 @@ class Board(object):
         if curr_stone == maybe_stone:
             return True
         else:
-            return self.breadth_first(curr_stone, maybe_stone, point, [])
+            return self.breadth_first(curr_stone, maybe_stone, [point], [])
     
     def breadth_first(self, curr_stone, maybe_stone, queue, visited):
         point = queue.pop(0)
         neighbors = self.valid_neighbors(point[0], point[1])
         for neighbor in neighbors:
             if neighbor not in visited:
-                if self.board_array[neighbor[0]][neighbor[1]] == maybe_stone:
-                    return true
-                elif self.board_array[neighbor[0]][neighbor[1]] == curr_stone:
+                if self.board_array[neighbor[1]][neighbor[0]] == maybe_stone:
+                    return True
+                elif self.board_array[neighbor[1]][neighbor[0]] == curr_stone:
                     queue.append(neighbor)
                     visited.append(neighbor)
         if len(queue) == 0:
-            return false
+            return False
         else:
-            return self.breadth_first(self, curr_stone, maybe_stone, queue, visited)
+            return self.breadth_first(curr_stone, maybe_stone, queue, visited)
 
 
     
     def valid_neighbors(self, point_x, point_y):
         valid_lst = []
         if (point_x + 1) < self.BOARD_SIZE:
-            if (point_y + 1) < self.BOARD_SIZE:
-                valid_lst.append([point_x + 1, point_y + 1])
-            if (point_y - 1) < 0:
-                valid_lst.append([point_x + 1, point_y - 1])
-        if (point_x - 1) < 0:
-            if (point_y + 1) < self.BOARD_SIZE:
-                valid_lst.append([point_x - 1, point_y + 1])
-            if (point_y - 1) < 0:
-                valid_lst.append([point_x - 1, point_y - 1])
+            valid_lst.append([point_x +1, point_y])
+        if (point_y + 1) < self.BOARD_SIZE:
+            valid_lst.append([point_x, point_y + 1])
+        if (point_x - 1) > 0:
+            valid_lst.append([point_x - 1, point_y])
+        if (point_y - 1) > 0:
+            valid_lst.append([point_x, point_y - 1])
         return valid_lst
 
         
