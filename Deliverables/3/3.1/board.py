@@ -208,9 +208,9 @@ class Board(object):
             valid_lst.append([point_x +1, point_y])
         if (point_y + 1) < self.BOARD_SIZE:
             valid_lst.append([point_x, point_y + 1])
-        if (point_x - 1) > 0:
+        if (point_x - 1) >= 0:
             valid_lst.append([point_x - 1, point_y])
-        if (point_y - 1) > 0:
+        if (point_y - 1) >= 0:
             valid_lst.append([point_x, point_y - 1])
         return valid_lst
 
