@@ -160,6 +160,7 @@ class WrapperBoard(object):
 
 class Board(object):
     EMPTY_STONE = " "
+    BOARD_SIZE = 19
 
     def __init__(self, board_array):
         self.board_array = board_array
@@ -178,8 +179,43 @@ class Board(object):
         else: return False
 
     def is_reachable(self, point, maybe_stone):
-        # base case
-        return "not implemented"
+        curr_stone = self.board_array[point[1]][point[0]]
+        if curr_stone == maybe_stone:
+            return True
+        else:
+            return self.breadth_first(curr_stone, maybe_stone, point, [])
+    
+    def breadth_first(self, curr_stone, maybe_stone, queue, visited):
+        point = queue.pop(0)
+        neighbors = self.valid_neighbors(point[0], point[1])
+        for neighbor in neighbors:
+            if neighbor not in visited:
+                if self.board_array[neighbor[0]][neighbor[1]] == maybe_stone:
+                    return true
+                elif self.board_array[neighbor[0]][neighbor[1]] == curr_stone:
+                    queue.append(neighbor)
+                    visited.append(neighbor)
+        if len(queue) == 0:
+            return false
+        else:
+            return self.breadth_first(self, curr_stone, maybe_stone, queue, visited)
+
+
+    
+    def valid_neighbors(self, point_x, point_y):
+        valid_lst = []
+        if (point_x + 1) < self.BOARD_SIZE:
+            if (point_y + 1) < self.BOARD_SIZE:
+                valid_lst.append([point_x + 1, point_y + 1])
+            if (point_y - 1) < 0:
+                valid_lst.append([point_x + 1, point_y - 1])
+        if (point_x - 1) < 0:
+            if (point_y + 1) < self.BOARD_SIZE:
+                valid_lst.append([point_x - 1, point_y + 1])
+            if (point_y - 1) < 0:
+                valid_lst.append([point_x - 1, point_y - 1])
+        return valid_lst
+
         
 
     def place(self, stone, point):
@@ -210,5 +246,4 @@ class Board(object):
         return str(point_x) + '-' + str(point_y) 
 
         
-
 
