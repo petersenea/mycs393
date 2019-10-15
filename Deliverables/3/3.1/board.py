@@ -20,14 +20,6 @@ class BoardInterface(ABC):
         pass
     
     @abstractmethod
-    def breadth_first(self, curr_stone, maybe_stone, queue, visited):
-        pass
-    
-    @abstractmethod
-    def valid_neighbors(self, point_x, point_y):
-        pass
-
-    @abstractmethod
     def place(self, stone, point):
         pass
 
@@ -35,9 +27,6 @@ class BoardInterface(ABC):
     def remove(self, stone, point):
         pass
 
-    @abstractmethod
-    def get_points(self, maybe_stone):
-        pass
 
 """
     wrapper class that enforces contracts for the board class
@@ -46,20 +35,15 @@ class WrapperBoard(object):
     BOARD_SIZE = 19
     STONES = ['B', 'W']
     MAYBE_STONES = STONES + [" "]
-    
-
+    '''
+        input_array takes the format [board, statement]
+    '''
     def __init__(self, input_array):
         self._verify_input_arr(input_array)
 
-        board_array = input_array[0]
-        statement = input_array[1]
-
-        self._verify_board(board_array)
-        self._verify_statement(statement)
-
-        board = Board(board_array)
+        board = Board(input_array[0])
         
-        self.ret_value = self._play_move(board, statement)
+        self.ret_value = self._play_move(board, input_array[1])
 
     """
         returns the contents of self.ret_value
@@ -67,11 +51,13 @@ class WrapperBoard(object):
     def ret(self):
         return self.ret_value
 
-
     """
+        input_array takes the format [board, statement]
         verifies the input_array:
             (1) is a list
             (2) is of length 2
+            (3) board is a valid size and has valid markers for each point
+            (4) the statment is a valid statement and has the correct number and type of arguments
     """
     def _verify_input_arr(self, input_array):
 
@@ -80,6 +66,9 @@ class WrapperBoard(object):
 
         if len(input_array) != 2:
             raise BaseException("input_array is not of length 2.")
+
+        self._verify_board(input_array[0])
+        self._verify_statement(input_array[1])
 
 
     """
@@ -91,15 +80,14 @@ class WrapperBoard(object):
         if len(board_array) != self.BOARD_SIZE or len(board_array[0]) != self.BOARD_SIZE:
             raise BaseException("board_array is not valid size.")
         else:
-            for i in range(self.BOARD_SIZE):
-                if not all(x == "W" or x == "B" or x == " " for x in board_array[i]):
+            for row in board_array:
+                if not all(x in self.MAYBE_STONES for x in row):
                     raise BaseException("board_array does not have valid contents.")
-
-
+            
     """
         verifies the statement:
             (1) has a valid method
-            (2) has the correct number of arguments for that method
+            (2) has the correct number and type of arguments for that method
     """
     def _verify_statement(self, statement):
         method = statement[0]
@@ -173,7 +161,7 @@ class WrapperBoard(object):
 
 
     """
-        returns a list of ints representing a given Point
+        returns a list of ints representing a given Point from a string
     """
     def _create_point(self, point):
         return [int(i) - 1 for i in point.split('-')]
@@ -181,7 +169,7 @@ class WrapperBoard(object):
 
     """
         calls the given method with the appropriate arguments on an instance
-        of the Board class
+        of the Board class and returns the output
     """
     def _play_move(self, board, statement):
         method = statement[0]
@@ -224,24 +212,23 @@ class Board(BoardInterface):
         if curr_stone == maybe_stone:
             return True
         else:
-            return self.breadth_first(curr_stone, maybe_stone, [point], [])
+            return self._breadth_first(curr_stone, maybe_stone, [point], [])
     
-    def breadth_first(self, curr_stone, maybe_stone, queue, visited):
+    def _breadth_first(self, curr_stone, maybe_stone, queue, visited):
         point = queue.pop(0)
-        neighbors = self.valid_neighbors(point[0], point[1])
+        neighbors = self._valid_neighbors(point[0], point[1])
         for neighbor in neighbors:
-            if neighbor not in visited:
-                if self.board_array[neighbor[1]][neighbor[0]] == maybe_stone:
-                    return True
-                elif self.board_array[neighbor[1]][neighbor[0]] == curr_stone:
-                    queue.append(neighbor)
-                    visited.append(neighbor)
+            if self.board_array[neighbor[1]][neighbor[0]] == maybe_stone:
+                return True
+            if neighbor not in visited and self.board_array[neighbor[1]][neighbor[0]] == curr_stone:
+                queue.append(neighbor)
+                visited.append(neighbor)
         if len(queue) == 0:
             return False
         else:
-            return self.breadth_first(curr_stone, maybe_stone, queue, visited)
+            return self._breadth_first(curr_stone, maybe_stone, queue, visited)
     
-    def valid_neighbors(self, point_x, point_y):
+    def _valid_neighbors(self, point_x, point_y):
         valid_lst = []
         if (point_x + 1) < self.BOARD_SIZE:
             valid_lst.append([point_x +1, point_y])
@@ -271,14 +258,14 @@ class Board(BoardInterface):
 
         points = np.where(np_array == maybe_stone)
              
-        points_coords = [self._create_point(points[1][i] + 1, points[0][i] + 1) for i in range(len(points[0]))]
+        points_coords = [self._create_point(points[1][i], points[0][i]) for i in range(len(points[0]))]
 
         points_coords.sort()
 
         return points_coords
 
     def _create_point(self, point_x, point_y):
-        return str(point_x) + '-' + str(point_y) 
+        return str(point_x + 1) + '-' + str(point_y + 1) 
 
         
 
