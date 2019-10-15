@@ -1,33 +1,6 @@
 from abc import ABC, abstractmethod
 import numpy as np
 
-
-class BoardInterface(ABC):
-
-    def __init__(self):
-        super().__init__()
-
-    @abstractmethod
-    def is_occupied(self, point):
-        pass
-    
-    @abstractmethod
-    def does_occupy(self, stone, point):
-        pass
-
-    @abstractmethod
-    def is_reachable(self, point, maybe_stone):
-        pass
-    
-    @abstractmethod
-    def place(self, stone, point):
-        pass
-
-    @abstractmethod
-    def remove(self, stone, point):
-        pass
-
-
 """
     wrapper class that enforces contracts for the board class
 """
@@ -35,9 +8,9 @@ class WrapperBoard(object):
     BOARD_SIZE = 19
     STONES = ['B', 'W']
     MAYBE_STONES = STONES + [" "]
-    '''
+    """
         input_array takes the format [board, statement]
-    '''
+    """
     def __init__(self, input_array):
         self._verify_input_arr(input_array)
 
@@ -190,7 +163,7 @@ class WrapperBoard(object):
 
     
 
-class Board(BoardInterface):
+class Board(object):
     EMPTY_STONE = " "
     BOARD_SIZE = 19  
 
