@@ -113,7 +113,8 @@ class WrapperBoard(object):
             point = [int(i) for i in point]
         except:
             raise BaseException("Point indexes should be numbers.")
-        if point[0] > self.BOARD_SIZE or point[1] > self.BOARD_SIZE:
+        if 1 > point[0] > self.BOARD_SIZE or 1 > point[1] > self.BOARD_SIZE:
+        #if point[0] > self.BOARD_SIZE or point[1] > self.BOARD_SIZE:
             raise BaseException('Points are not on board')
 
 
@@ -169,24 +170,45 @@ class Board(object):
 
     def __init__(self, board_array):
         self.board_array = board_array
-        
+    
+    """
+        returns:
+            * True if there is a Stone at the given Point on the board
+            * False otherwise
+    """
     def is_occupied(self, point):
         if self.board_array[point[1]][point[0]] != self.EMPTY_STONE:
             return True
         else: return False
 
+    """
+        returns:
+            * True if the given Stone is at the given Point on the board
+            * False otherwise
+    """
     def does_occupy(self, stone, point):
         if self.board_array[point[1]][point[0]] == stone:
             return True
         else: return False
 
+    """
+        returns:
+            * True if there exists a path from the given Point to the given MaybeStone
+            * False otherwise
+    """
     def is_reachable(self, point, maybe_stone):
         curr_stone = self.board_array[point[1]][point[0]]
         if curr_stone == maybe_stone:
             return True
         else:
             return self._breadth_first(curr_stone, maybe_stone, [point], [])
-    
+
+    """
+        performs a breadth first search on the board
+        returns:
+            * True if the desired MaybeStone is located in the search
+            * False otherwise
+    """
     def _breadth_first(self, curr_stone, maybe_stone, queue, visited):
         point = queue.pop(0)
         neighbors = self._valid_neighbors(point[0], point[1])
@@ -201,6 +223,9 @@ class Board(object):
         else:
             return self._breadth_first(curr_stone, maybe_stone, queue, visited)
     
+    """
+        returns a list of Points on the board that contain valid neighbors to the MaybeStone at point_x, point_y 
+    """
     def _valid_neighbors(self, point_x, point_y):
         valid_lst = []
         if (point_x + 1) < self.BOARD_SIZE:
@@ -213,6 +238,11 @@ class Board(object):
             valid_lst.append([point_x, point_y - 1])
         return valid_lst
 
+    """
+        returns:
+            * a board array with the new Stone at Point, if that Point was previously empty
+            * "This seat is taken!", if that Point was previously filled with a Stone
+    """
     def place(self, stone, point):
         if self.board_array[point[1]][point[0]] == self.EMPTY_STONE:
             self.board_array[point[1]][point[0]] = stone
@@ -220,12 +250,20 @@ class Board(object):
         else: 
             return "This seat is taken!"
 
+    """
+        returns:
+            * a board array with an Empty at Point, if that Point was previously occupied by the given Stone
+            * "I am just a board! I cannot remove what is not there!", if that Point was previously not occupied by the given Stone
+    """
     def remove(self, stone, point):
         if self.board_array[point[1]][point[0]] == stone:
             self.board_array[point[1]][point[0]] = self.EMPTY_STONE
             return self.board_array
         else: return "I am just a board! I cannot remove what is not there!"
 
+    """
+        returns a list of lexigraphically ordered Points where the given MaybeStone exists on the board
+    """
     def get_points(self, maybe_stone):
         np_array = np.array(self.board_array)
 
@@ -237,6 +275,9 @@ class Board(object):
 
         return points_coords
 
+    """
+        returns the Point object for the coordinate integers point_x and point_y
+    """
     def _create_point(self, point_x, point_y):
         return str(point_x + 1) + '-' + str(point_y + 1) 
 
