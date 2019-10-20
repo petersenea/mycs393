@@ -1,3 +1,4 @@
+from board import WrapperBoard
 import sys
 import json
 
@@ -22,8 +23,6 @@ while len(str_json)>0:
 
 
 # ret_list = [WrapperBoard(obj).ret() for obj in json_list]
-# x=0
-# ret_list = [print(x+1) for obj in json_list]
 ret_list = json_list
 
 sys.stdout.write(json.dumps(ret_list))
