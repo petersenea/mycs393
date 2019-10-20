@@ -190,12 +190,24 @@ class RuleChecker(object):
                     return True
                 return self._is_board_empty(boards[0])
         else:
+            # ELIZABETH WILL DO THIS
             return True
             
 
     def _is_board_empty(self, board_array):
         board = Board(board_array)
         return len(board.get_points(" ")) == board.BOARD_SIZE**2
+
+    def _remove_stones(self, stone, point, board_array):
+        # assume the stone has already been placed for the turn
+        # stone is the type you are removing
+        pass
+
+    def _play_move(self, stone, point, board_array):
+        # place stone
+        # remove opponents stones using _remove_stones
+        # verify that there are liberties
+        pass
 
 
 
