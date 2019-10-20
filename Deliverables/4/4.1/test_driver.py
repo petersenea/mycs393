@@ -1,4 +1,4 @@
-from board import WrapperBoard
+from board import InterfaceWrapper
 import sys
 import json
 
@@ -22,7 +22,6 @@ while len(str_json)>0:
         str_json = str_json[1:]
 
 
-# ret_list = [WrapperBoard(obj).ret() for obj in json_list]
-ret_list = json_list
+ret_list = [InterfaceWrapper(obj).ret() for obj in json_list]
 
 sys.stdout.write(json.dumps(ret_list))

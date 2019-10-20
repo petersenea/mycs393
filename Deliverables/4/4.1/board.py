@@ -4,46 +4,43 @@ import numpy as np
 """
     wrapper class that enforces contracts for the board class
 """
-class WrapperBoard(object):
+class InterfaceWrapper(object):
     BOARD_SIZE = 19
     STONES = ['B', 'W']
     MAYBE_STONES = STONES + [" "]
     """
         input_array takes the format [board, statement]
     """
-    def __init__(self, input_array):
-        self._verify_input_arr(input_array)
+    def __init__(self, input_):
+        self._verify_input_(input_)
+        self.ret_value = RuleChecker(input_).ret()
 
-        board = Board(input_array[0])
-        
-        self.ret_value = self._play_move(board, input_array[1])
-
-    """
-        returns the contents of self.ret_value
-    """
     def ret(self):
         return self.ret_value
-
+        
     """
-        input_array takes the format [board, statement]
-        verifies the input_array:
+        input_ takes the format [Stone, Move] or Board
+        verifies the input_:
             (1) is a list
-            (2) is of length 2
-            (3) board is a valid size and has valid markers for each point
-            (4) the statment is a valid statement and has the correct number and type of arguments
+            (2) is either of length 2 or a Board
+            (3) The Board is a valid Board
+            (4) The Stone is a valid Stone
+            (5) The Move is a valid Move
     """
-    def _verify_input_arr(self, input_array):
+    def _verify_input_(self, input_):
 
-        if type(input_array) != list: 
-            raise BaseException("input_array is not of type list.")
+        if type(input_) != list: 
+            raise BaseException("input_ is not of type list.")
 
-        if len(input_array) != 2:
-            raise BaseException("input_array is not of length 2.")
+        if len(input_) == 2:
+            # check if valid Stone:
+            self._check_stone(input_[0])
+            # check if valid Move:
+            self._check_move(input_[1])
 
-        self._verify_board(input_array[0])
-        self._verify_statement(input_array[1])
-
-
+        else:
+            self._verify_board(input_)
+            
     """
         verifies the board_array:
             (1) is the correct size
@@ -57,51 +54,7 @@ class WrapperBoard(object):
                 if not all(x in self.MAYBE_STONES for x in row):
                     raise BaseException("board_array does not have valid contents.")
             
-    """
-        verifies the statement:
-            (1) has a valid method
-            (2) has the correct number and type of arguments for that method
-    """
-    def _verify_statement(self, statement):
-        method = statement[0]
-        args = statement[1:]
-
-        if method == "occupied?":
-            self._check_arg_len(args, method)
-            self._check_point(args[0])
-        elif method == "occupies?":
-            self._check_arg_len(args, method)
-            self._check_stone(args[0])
-            self._check_point(args[1])
-        elif method == "reachable?":
-            self._check_arg_len(args, method)
-            self._check_point(args[0])
-            self._check_maybe_stone(args[1])
-        elif method == "place":
-            self._check_arg_len(args, method)
-            self._check_stone(args[0])
-            self._check_point(args[1])
-        elif method == "remove":
-            self._check_arg_len(args, method)
-            self._check_stone(args[0])
-            self._check_point(args[1])
-        elif method == "get-points":
-            self._check_arg_len(args, method)
-            self._check_maybe_stone(args[0])
-        else:
-            raise BaseException("statement method is not a valid method.")
-    
-
-    """
-        verifies that the number of given arguments is the correct 
-        number for the given method
-    """
-    def _check_arg_len(self, args, method):
-        statement_arg_length = {"occupied?": 1, "occupies?" : 2, "reachable?": 2, "place": 2, "remove":2, "get-points": 1}
-        if len(args) != statement_arg_length[method]:
-            raise BaseException("wrong number of arguments for the method.")
-    
-
+   
     """
         verifies that a given Point is valid
     """
@@ -114,7 +67,6 @@ class WrapperBoard(object):
         except:
             raise BaseException("Point indexes should be numbers.")
         if 1 > point[0] > self.BOARD_SIZE or 1 > point[1] > self.BOARD_SIZE:
-        #if point[0] > self.BOARD_SIZE or point[1] > self.BOARD_SIZE:
             raise BaseException('Points are not on board')
 
 
@@ -134,6 +86,21 @@ class WrapperBoard(object):
             raise BaseException("not a valid MaybeStone.")
 
 
+    def _check_move(self, move):
+        if len(move) == 2:
+            # check [Point, Boards]
+            self._check_point(move[0])
+            self._check_boards(move[1])
+        elif move != "pass":
+            raise BaseException("Move is not valid.")
+
+    
+    def _check_boards(self, boards_arr):
+        if 1 <= len(boards_arr) <= 3:
+            [self._verify_board(x) for x in boards_arr]
+        else:
+            raise BaseException("Boards array is not valid length.")
+
     """
         returns a list of ints representing a given Point from a string
     """
@@ -141,26 +108,44 @@ class WrapperBoard(object):
         return [int(i) - 1 for i in point.split('-')]
 
 
-    """
-        calls the given method with the appropriate arguments on an instance
-        of the Board class and returns the output
-    """
-    def _play_move(self, board, statement):
-        method = statement[0]
-        args = statement[1:]
+    
 
-        if method == "occupied?":
-            return board.is_occupied(self._create_point(args[0]))
-        elif method == "occupies?":
-            return board.does_occupy(args[0], self._create_point(args[1]))
-        elif method == "reachable?":
-            return board.is_reachable(self._create_point(args[0]), args[1])
-        elif method == "place":
-            return board.place(args[0], self._create_point(args[1]))
-        elif method == "remove":
-            return board.remove(args[0], self._create_point(args[1]))
-        elif method == "get-points":
-            return board.get_points(args[0])
+class RuleChecker(object):
+    """
+        input_ is either [Stone, Move] or Board
+    """
+    
+    def __init__(self, input_):
+        if len(input_) == 2:
+            self.ret_value = true
+        else:
+            # calculate score of input_
+            board = Board(input_)
+            self.ret_value = self._calc_score(board)
+
+    def ret(self):
+        return self.ret_value
+
+    def _calc_score(self, board):
+        b_points = len(board.get_points('B'))
+        w_points = len(board.get_points('W'))
+        empty_spaces = board.get_points(' ')       
+        for space in empty_spaces:
+            space = self._create_point(space)
+            b_reach = board.is_reachable(space, 'B')
+            w_reach = board.is_reachable(space,'W')
+            if b_reach and w_reach:
+                pass
+            elif b_reach:
+                b_points += 1
+            elif w_reach:
+                w_points += 1
+        return {"B": b_points, "W": w_points}
+
+    def _create_point(self, point):
+        return [int(i) - 1 for i in point.split('-')]
+
+
 
     
 
