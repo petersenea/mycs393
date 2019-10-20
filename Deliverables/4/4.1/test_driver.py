@@ -1,1 +1,29 @@
-# haha no code in heeeere :P
+import sys
+import json
+
+json_list = []
+
+num_objs = 0
+str_json = ""
+decoder = json.JSONDecoder()
+
+
+for line in sys.stdin:
+    str_json += line
+
+while len(str_json)>0:
+    try:
+        obj, idx = decoder.raw_decode(str_json)
+        str_json = str_json[idx:]
+        json_list.append(obj)
+        num_objs += 1
+    except:
+        str_json = str_json[1:]
+
+
+# ret_list = [WrapperBoard(obj).ret() for obj in json_list]
+# x=0
+# ret_list = [print(x+1) for obj in json_list]
+ret_list = json_list
+
+sys.stdout.write(json.dumps(ret_list))
