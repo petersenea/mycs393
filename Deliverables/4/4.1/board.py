@@ -117,7 +117,10 @@ class RuleChecker(object):
     
     def __init__(self, input_):
         if len(input_) == 2:
-            self.ret_value = true
+            if input_[1] == "pass":
+                self.ret_value = True
+            else:
+                self._verify_play(input_)
         else:
             # calculate score of input_
             board = Board(input_)
@@ -144,6 +147,49 @@ class RuleChecker(object):
 
     def _create_point(self, point):
         return [int(i) - 1 for i in point.split('-')]
+    
+    def _verify_play(self, input_):
+        stone = input_[0]
+        play = input_[1]
+        point = self._create_point(play[0])
+        boards = play[1]
+
+        current_board = Board(boards[0])
+
+        # check if the boards array history is valid
+        if self._is_valid_game_history(boards):
+            
+            next_board_arr = current_board.place(stone, point)
+            
+            if next_board_arr == "This seat is taken!":
+                return False
+            else:
+                # check that new placement has liberties
+                next_board = Board(next_board_arr)
+                return next_board.is_reachable(point, " ")
+
+
+        else:
+            return False
+    
+    def _is_valid_game_history(self, boards):
+        if len(boards) == 1:
+            return self._is_board_empty(boards[0])
+        elif len(boards) == 2:
+            if self._is_board_empty(boards[1]):
+                curr_board = Board(boards[0])
+
+                if len(curr_board.get_points("W")) == 0 and len(curr_board.get_points("B")) == 1:
+                    return True
+                return self._is_board_empty(boards[0])
+        else:
+            return True
+            
+
+    def _is_board_empty(self, board_array):
+        board = Board(board_array)
+        return len(board.get_points(" ")) == board.BOARD_SIZE**2
+
 
 
 
