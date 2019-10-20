@@ -120,7 +120,7 @@ class RuleChecker(object):
             if input_[1] == "pass":
                 self.ret_value = True
             else:
-                self._verify_play(input_)
+                self.ret_value = self._verify_play(input_)
         else:
             # calculate score of input_
             board = Board(input_)
@@ -164,9 +164,16 @@ class RuleChecker(object):
             if next_board_arr == "This seat is taken!":
                 return False
             else:
-                # check that new placement has liberties
                 next_board = Board(next_board_arr)
-                return next_board.is_reachable(point, " ")
+
+                # remove opponents liberty-less pieces
+                
+
+                # check for suicide
+                if next_board.is_reachable(point, " "):
+                    return True
+                else:
+                    return False
 
 
         else:
