@@ -184,7 +184,6 @@ class RuleChecker(object):
                 """ STILL NEED TO IMPLEMENT """
 
                 # check for suicide
-                print(point)
                 if next_board.is_reachable(point, " "):
                     return True
                 else:
