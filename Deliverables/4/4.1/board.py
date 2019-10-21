@@ -172,7 +172,7 @@ class RuleChecker(object):
         if self._is_valid_game_history(stone, opp_stone, boards):
             next_board = self._play_move(stone, point, copy(boards[0]))
             if next_board == False: return False
-            elif next_board.board_array == boards[1]: return False
+            elif len(boards) > 1 and next_board.board_array == boards[1]: return False
             else: return True
         else:
             return False
