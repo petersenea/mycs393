@@ -169,27 +169,10 @@ class RuleChecker(object):
 
         # check if the boards array history is valid
         if self._is_valid_game_history(stone, opp_stone, boards):
-            
-            next_board_arr = current_board.place(stone, point)
-            
-            if next_board_arr == "This seat is taken!":
-                return False
-            else:
-
-                # remove opponents liberty-less pieces
-                next_board_arr = self._remove_stones(opp_stone, point, Board(next_board_arr))
-                next_board = Board(next_board_arr)
-                
-                # verify that there are liberties
-                """ STILL NEED TO IMPLEMENT """
-
-                # check for suicide
-                if next_board.is_reachable(point, " "):
-                    return True
-                else:
-                    return False
-
-
+            next_board = self._play_move(stone, point, boards[0])
+            if next_board == False: return False
+            elif next_board.board_array == boards[1]: return False
+            else: return True
         else:
             return False
     
@@ -210,6 +193,8 @@ class RuleChecker(object):
             prev_board = boards[1]
             last_board = boards[2]
 
+            if curr_board.board_array == last_board.board_array: return False
+
             curr_opp_stones = curr_board.get_points(opp_stone)
             prev_opp_stones = prev_board.get_points(opp_stone)
             opp_point = list(set(curr_opp_stones) - set(prev_opp_stones))
@@ -223,59 +208,18 @@ class RuleChecker(object):
                 if len(player_point) == 1:
                     simulation_board = self._play_move(stone, self._create_point(player_point[0]), last_board.board_array)
                     if simulation_board == False: return False
-                    return prev_board.board_array != simulation_board.board_array
-            else: return False
-
-
-
-            '''
-            # last turn was the opponent's
-            # since no suicide, they should have increased their stone count by 1 on the board
-            curr_opp_stones = curr_board.get_points(opp_stone)
-            prev_opp_stones = prev_board.get_points(opp_stone)
-            if len(curr_opp_stones) - len(prev_opp_stones) == 1:
-                # find point of added stone
-                opp_point = self._create_point(list(set(curr_opp_stones) - set(prev_opp_stones))[0])
-                
-                # add stone
-                new_arr = prev_board.place(opp_stone, opp_point)
-                if new_arr == "This seat is taken!":
-                    return False
-
-                # remove opps
-                new_arr = self._remove_stones(stone, opp_point, new_arr)
-
-                # compare boards
-                if boards[0].board_array != new_arr:
-                    return False
-                
-                # turn before last was the current player's
-                # since no suicide, they should have increased their stone count by 1 on the board 
-                prev_player_stones = prev_board.get_points(stone)
-                last_player_stones = last_board.get_points(stone)
-                if len(prev_player_stones) - len(last_player_stones) == 1:
-                    # find point of added stone
-                    player_point = self._create_point(list(set(prev_player_stones) - set(last_player_stones))[0])
-
-                    # add stone
-                    new_arr = prev_board.place(stone, player_point)
-                    if new_arr == "This seat is taken!": return False
-
-                    # remove opps
-                    new_arr = self._remove_stones(opp_stone, player_point, new_arr)
-
-                    # compare boards
-                    if boards[1].board_array != new_arr:
-                        return False
-                    else:
-                        return True
-
-                else:
-                    return False
-            
+                    return prev_board.board_array == simulation_board.board_array
+                elif prev_board.board_array == last_board.board_array: return True
+            elif curr_board.board_array == prev_board.board_array:
+                curr_stones = prev_board.get_points(stone)
+                prev_stones = last_board.get_points(stone)
+                player_point = list(set(curr_stones) - set(prev_stones))
+                if len(player_point) == 1:
+                    simulation_board = self._play_move(stone, self._create_point(player_point[0]), last_board.board_array)
+                    if simulation_board == False: return False
+                    return prev_board.board_array == simulation_board.board_array
             else:
                 return False
-            '''
             
             
     def _get_opponent_stone(self, stone):
