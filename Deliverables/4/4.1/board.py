@@ -177,7 +177,7 @@ class RuleChecker(object):
             else:
 
                 # remove opponents liberty-less pieces
-                next_board_arr = self._remove_stones(opp_stone, point, next_board_arr)
+                next_board_arr = self._remove_stones(opp_stone, point, Board(next_board_arr))
                 next_board = Board(next_board_arr)
                 
                 # verify that there are liberties
@@ -213,16 +213,16 @@ class RuleChecker(object):
 
             curr_opp_stones = curr_board.get_points(opp_stone)
             prev_opp_stones = prev_board.get_points(opp_stone)
-            opp_point = self._create_point(list(set(curr_opp_stones) - set(prev_opp_stones)))
+            opp_point = list(set(curr_opp_stones) - set(prev_opp_stones))
             if len(opp_point) == 1:
-                simulation_board = self._play_move(opp_stone, opp_point[0], prev_board.board_array)
+                simulation_board = self._play_move(opp_stone, self._create_point(opp_point[0]), prev_board.board_array)
                 if simulation_board == False: return False
                 if curr_board.board_array != simulation_board.board_array: return False
                 curr_stones = prev_board.get_points(stone)
                 prev_stones = last_board.get_points(stone)
-                player_point = self._create_point(list(set(curr_stones) - set(prev_stones)))
+                player_point = list(set(curr_stones) - set(prev_stones))
                 if len(opp_point) == 1:
-                    simulation_board = self._play_move(stone, player_point[0], last_board.board_array)
+                    simulation_board = self._play_move(stone, self._create_point(player_point[0]), last_board.board_array)
                     if simulation_board == False: return False
                     return prev_board.board_array != simulation_board.board_array
             else: return False
