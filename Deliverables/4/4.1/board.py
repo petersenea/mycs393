@@ -132,17 +132,24 @@ class RuleChecker(object):
     def _calc_score(self, board):
         b_points = len(board.get_points('B'))
         w_points = len(board.get_points('W'))
-        empty_spaces = board.get_points(' ')       
-        for space in empty_spaces:
-            space = self._create_point(space)
-            b_reach = board.is_reachable(space, 'B')
-            w_reach = board.is_reachable(space,'W')
-            if b_reach and w_reach:
-                pass
-            elif b_reach:
-                b_points += 1
-            elif w_reach:
-                w_points += 1
+        empty_spaces = [self._create_point(space) for space in board.get_points(' ')]   
+
+        #for every empty space not already checked, check to see if it and its neighbor chain is reachable by either opponent     
+        while len(empty_spaces) > 0:
+            space = empty_spaces.pop(0)
+
+            #find list of all the points with the same MaybeStone that the point is connected to, as they will all be reachable
+            #by the same MaybeStones
+            neighbor_chain = board.neighbor_chain(board.get_maybe_stone(space), [space], [space])
+            
+            if board.is_reachable(space, 'B'):
+                if not board.is_reachable(space,'W'):
+                    b_points += len(neighbor_chain)
+            elif board.is_reachable(space,'W'):
+                w_points += len(neighbor_chain)
+
+            #do not need to check if each one of a chain is reachable, as they are already accounted for
+            empty_spaces = [i for i in empty_spaces if i not in neighbor_chain]
         return {"B": b_points, "W": w_points}
 
     def _create_point(self, point):
@@ -186,13 +193,15 @@ class RuleChecker(object):
     
     def _is_valid_game_history(self, stone, opp_stone, boards):
         if len(boards) == 1:
-            return self._is_board_empty(boards[0])
+            if stone == 'B' and self._is_board_empty(boards[0]): return True
+            else: return False
         elif len(boards) == 2:
             if self._is_board_empty(boards[1]):
                 curr_board = Board(boards[0])
 
                 if len(curr_board.get_points("W")) == 0 and len(curr_board.get_points("B")) == 1:
                     return True
+                if stone != 'W': return False
                 return self._is_board_empty(boards[0])
         else:
             curr_board = Board(boards[0])
@@ -210,6 +219,8 @@ class RuleChecker(object):
                 
                 # add stone
                 new_arr = prev_board.place(opp_stone, opp_point)
+                if new_arr == "This seat is taken!":
+                    return False
 
                 # remove opps
                 new_arr = self._remove_stones(stone, opp_point, new_arr)
@@ -228,6 +239,7 @@ class RuleChecker(object):
 
                     # add stone
                     new_arr = prev_board.place(stone, player_point)
+                    if new_arr == "This seat is taken!": return False
 
                     # remove opps
                     new_arr = self._remove_stones(opp_stone, player_point, new_arr)
@@ -258,7 +270,17 @@ class RuleChecker(object):
     def _remove_stones(self, stone, point, board_array):
         # assume the stone has already been placed for the turn
         # stone is the type you are removing
-        return "Not implemented"
+        board = Board(board_array)
+        neighbors = board._valid_neighbors(point)
+        for neighbor in neighbors:
+            if board.get_maybe_stone(neighbor) == stone:
+                neighbor_chain = board.neighbor_chain(stone, [neighbor], [neighbor])
+                if not board.is_reachable(neighbor, ' '):
+                    for link in neighbor_chain:
+                        board.remove(stone, link)
+        return board.board_array
+
+
 
     # actually implemented elsewhere in _verify_play and _is_valid_game_history
     def _play_move(self, stone, point, board_array):
@@ -302,7 +324,7 @@ class Board(object):
             * False otherwise
     """
     def is_reachable(self, point, maybe_stone):
-        curr_stone = self.board_array[point[1]][point[0]]
+        curr_stone = self.get_maybe_stone(point)#self.board_array[point[1]][point[0]]
         if curr_stone == maybe_stone:
             return True
         else:
@@ -316,11 +338,11 @@ class Board(object):
     """
     def _breadth_first(self, curr_stone, maybe_stone, queue, visited):
         point = queue.pop(0)
-        neighbors = self._valid_neighbors(point[0], point[1])
+        neighbors = self._valid_neighbors(point)
         for neighbor in neighbors:
-            if self.board_array[neighbor[1]][neighbor[0]] == maybe_stone:
+            if self.get_maybe_stone(neighbor) == maybe_stone:#self.board_array[neighbor[1]][neighbor[0]] == maybe_stone:
                 return True
-            if neighbor not in visited and self.board_array[neighbor[1]][neighbor[0]] == curr_stone:
+            if neighbor not in visited and self.get_maybe_stone(neighbor) == curr_stone:#self.board_array[neighbor[1]][neighbor[0]] == curr_stone:
                 queue.append(neighbor)
                 visited.append(neighbor)
         if len(queue) == 0:
@@ -331,8 +353,10 @@ class Board(object):
     """
         returns a list of Points on the board that contain valid neighbors to the MaybeStone at point_x, point_y 
     """
-    def _valid_neighbors(self, point_x, point_y):
+    def _valid_neighbors(self, point):
         valid_lst = []
+        point_x = point[0]
+        point_y = point[1]
         if (point_x + 1) < self.BOARD_SIZE:
             valid_lst.append([point_x +1, point_y])
         if (point_y + 1) < self.BOARD_SIZE:
@@ -343,14 +367,26 @@ class Board(object):
             valid_lst.append([point_x, point_y - 1])
         return valid_lst
 
+    def neighbor_chain(self, curr_stone, queue, visited):
+        point = queue.pop(0)
+        neighbors = self._valid_neighbors(point)
+        for neighbor in neighbors:
+            if neighbor not in visited and self.get_maybe_stone(neighbor) == curr_stone:#self.board_array[neighbor[1]][neighbor[0]] == curr_stone:
+                queue.append(neighbor)
+                visited.append(neighbor)
+        if len(queue) == 0:
+            return visited
+        else:
+            return self.neighbor_chain(curr_stone, queue, visited)
+
     """
         returns:
             * a board array with the new Stone at Point, if that Point was previously empty
             * "This seat is taken!", if that Point was previously filled with a Stone
     """
     def place(self, stone, point):
-        if self.board_array[point[1]][point[0]] == self.EMPTY_STONE:
-            self.board_array[point[1]][point[0]] = stone
+        if self.get_maybe_stone(point) == self.EMPTY_STONE:#board_array[point[1]][point[0]] == self.EMPTY_STONE:
+            self.set_maybe_stone(point, stone)#self.board_array[point[1]][point[0]] = stone
             return self.board_array
         else: 
             return "This seat is taken!"
@@ -361,8 +397,8 @@ class Board(object):
             * "I am just a board! I cannot remove what is not there!", if that Point was previously not occupied by the given Stone
     """
     def remove(self, stone, point):
-        if self.board_array[point[1]][point[0]] == stone:
-            self.board_array[point[1]][point[0]] = self.EMPTY_STONE
+        if self.get_maybe_stone(point) == stone:#self.board_array[point[1]][point[0]] == stone:
+            self.set_maybe_stone(point, self.EMPTY_STONE)#self.board_array[point[1]][point[0]] = self.EMPTY_STONE
             return self.board_array
         else: return "I am just a board! I cannot remove what is not there!"
 
@@ -384,7 +420,13 @@ class Board(object):
         returns the Point object for the coordinate integers point_x and point_y
     """
     def _create_point(self, point_x, point_y):
-        return str(point_x + 1) + '-' + str(point_y + 1) 
+        return str(point_x + 1) + '-' + str(point_y + 1)
+
+    def get_maybe_stone(self, point):
+        return self.board_array[point[1]][point[0]]
+    
+    def set_maybe_stone(self, point, maybe_stone):
+        self.board_array[point[1]][point[0]] = maybe_stone
 
         
 
