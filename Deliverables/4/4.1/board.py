@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import numpy as np
+from copy import deepcopy as copy
 
 """
     wrapper class that enforces contracts for the board class
@@ -169,7 +170,7 @@ class RuleChecker(object):
 
         # check if the boards array history is valid
         if self._is_valid_game_history(stone, opp_stone, boards):
-            next_board = self._play_move(stone, point, boards[0])
+            next_board = self._play_move(stone, point, copy(boards[0]))
             if next_board == False: return False
             elif next_board.board_array == boards[1]: return False
             else: return True
@@ -199,15 +200,23 @@ class RuleChecker(object):
             prev_opp_stones = prev_board.get_points(opp_stone)
             opp_point = list(set(curr_opp_stones) - set(prev_opp_stones))
             if len(opp_point) == 1:
-                simulation_board = self._play_move(opp_stone, self._create_point(opp_point[0]), prev_board.board_array)
+                # print('hi')
+                # print('prev prev', prev_board.board_array)
+                simulation_board = self._play_move(opp_stone, self._create_point(opp_point[0]), copy(prev_board.board_array))
+                # print('post prev', prev_board.board_array)
                 if simulation_board == False: return False
                 if curr_board.board_array != simulation_board.board_array: return False
                 curr_stones = prev_board.get_points(stone)
                 prev_stones = last_board.get_points(stone)
                 player_point = list(set(curr_stones) - set(prev_stones))
+                # print('hello')
                 if len(player_point) == 1:
-                    simulation_board = self._play_move(stone, self._create_point(player_point[0]), last_board.board_array)
+                    # print('stone', stone, self._create_point(player_point[0]))
+                    simulation_board = self._play_move(stone, self._create_point(player_point[0]), copy(last_board.board_array))
+                    # print('sim', simulation_board)
                     if simulation_board == False: return False
+                    # print('prev', prev_board.board_array)
+                    # print('sim', simulation_board.board_array)
                     return prev_board.board_array == simulation_board.board_array
                 elif prev_board.board_array == last_board.board_array: return True
             elif curr_board.board_array == prev_board.board_array:
@@ -215,9 +224,10 @@ class RuleChecker(object):
                 prev_stones = last_board.get_points(stone)
                 player_point = list(set(curr_stones) - set(prev_stones))
                 if len(player_point) == 1:
-                    simulation_board = self._play_move(stone, self._create_point(player_point[0]), last_board.board_array)
+                    simulation_board = self._play_move(stone, self._create_point(player_point[0]), copy(last_board.board_array))
                     if simulation_board == False: return False
                     return prev_board.board_array == simulation_board.board_array
+                else: return False
             else:
                 return False
             
@@ -251,6 +261,7 @@ class RuleChecker(object):
         simulation_board = Board(board_array)
         placed = simulation_board.place(stone, point)
         if placed == "This seat is taken!": return False
+        # print('reach')
         opp_stone = self._get_opponent_stone(stone)
         new_arr = self._remove_stones(opp_stone, point, simulation_board)
         #if the stone placed has a liberty return true, else return false due to suicide rule
