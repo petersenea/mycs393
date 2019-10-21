@@ -148,8 +148,11 @@ class RuleChecker(object):
             elif board.is_reachable(space,'W'):
                 w_points += len(neighbor_chain)
 
-            #do not need to check if each one of a chain is reachable, as they are already accounted for
+            # do not need to check if each one of a chain is reachable, as they are already accounted for
+            # remove empty spaces that have already been checked
+            # can't do set manipulation because they are lists of lists
             empty_spaces = [i for i in empty_spaces if i not in neighbor_chain]
+
         return {"B": b_points, "W": w_points}
 
     def _create_point(self, point):
@@ -193,16 +196,16 @@ class RuleChecker(object):
     
     def _is_valid_game_history(self, stone, opp_stone, boards):
         if len(boards) == 1:
-            if stone == 'B' and self._is_board_empty(boards[0]): return True
+            if stone == "B" and self._is_board_empty(boards[0]): return True
             else: return False
         elif len(boards) == 2:
-            if self._is_board_empty(boards[1]):
-                curr_board = Board(boards[0])
-
-                if len(curr_board.get_points("W")) == 0 and len(curr_board.get_points("B")) == 1:
-                    return True
-                if stone != 'W': return False
-                return self._is_board_empty(boards[0])
+            if stone == "W":
+                if self._is_board_empty(boards[1]):
+                    curr_board = Board(boards[0])
+                    if len(curr_board.get_points("W")) == 0 and 0 <= len(curr_board.get_points("B")) <= 1:
+                        return True
+            return False
+    
         else:
             curr_board = Board(boards[0])
             prev_board = Board(boards[1])
@@ -275,11 +278,13 @@ class RuleChecker(object):
         for neighbor in neighbors:
             if board.get_maybe_stone(neighbor) == stone:
                 neighbor_chain = board.neighbor_chain(stone, [neighbor], [neighbor])
-                if not board.is_reachable(neighbor, ' '):
-                    for link in neighbor_chain:
-                        board.remove(stone, link)
+                if not self._has_liberty(board, neighbor):
+                    for point in neighbor_chain:
+                        board.remove(stone, point)
         return board.board_array
 
+    def _has_liberty(self, board, point):
+        return board.is_reachable(point, ' ')
 
 
     # actually implemented elsewhere in _verify_play and _is_valid_game_history
@@ -324,7 +329,7 @@ class Board(object):
             * False otherwise
     """
     def is_reachable(self, point, maybe_stone):
-        curr_stone = self.get_maybe_stone(point)#self.board_array[point[1]][point[0]]
+        curr_stone = self.get_maybe_stone(point)
         if curr_stone == maybe_stone:
             return True
         else:
@@ -340,9 +345,9 @@ class Board(object):
         point = queue.pop(0)
         neighbors = self._valid_neighbors(point)
         for neighbor in neighbors:
-            if self.get_maybe_stone(neighbor) == maybe_stone:#self.board_array[neighbor[1]][neighbor[0]] == maybe_stone:
+            if self.get_maybe_stone(neighbor) == maybe_stone:
                 return True
-            if neighbor not in visited and self.get_maybe_stone(neighbor) == curr_stone:#self.board_array[neighbor[1]][neighbor[0]] == curr_stone:
+            if neighbor not in visited and self.get_maybe_stone(neighbor) == curr_stone:
                 queue.append(neighbor)
                 visited.append(neighbor)
         if len(queue) == 0:
@@ -367,17 +372,6 @@ class Board(object):
             valid_lst.append([point_x, point_y - 1])
         return valid_lst
 
-    def neighbor_chain(self, curr_stone, queue, visited):
-        point = queue.pop(0)
-        neighbors = self._valid_neighbors(point)
-        for neighbor in neighbors:
-            if neighbor not in visited and self.get_maybe_stone(neighbor) == curr_stone:#self.board_array[neighbor[1]][neighbor[0]] == curr_stone:
-                queue.append(neighbor)
-                visited.append(neighbor)
-        if len(queue) == 0:
-            return visited
-        else:
-            return self.neighbor_chain(curr_stone, queue, visited)
 
     """
         returns:
@@ -385,8 +379,8 @@ class Board(object):
             * "This seat is taken!", if that Point was previously filled with a Stone
     """
     def place(self, stone, point):
-        if self.get_maybe_stone(point) == self.EMPTY_STONE:#board_array[point[1]][point[0]] == self.EMPTY_STONE:
-            self.set_maybe_stone(point, stone)#self.board_array[point[1]][point[0]] = stone
+        if self.get_maybe_stone(point) == self.EMPTY_STONE:
+            self.set_maybe_stone(point, stone)
             return self.board_array
         else: 
             return "This seat is taken!"
@@ -397,8 +391,8 @@ class Board(object):
             * "I am just a board! I cannot remove what is not there!", if that Point was previously not occupied by the given Stone
     """
     def remove(self, stone, point):
-        if self.get_maybe_stone(point) == stone:#self.board_array[point[1]][point[0]] == stone:
-            self.set_maybe_stone(point, self.EMPTY_STONE)#self.board_array[point[1]][point[0]] = self.EMPTY_STONE
+        if self.get_maybe_stone(point) == stone:
+            self.set_maybe_stone(point, self.EMPTY_STONE)
             return self.board_array
         else: return "I am just a board! I cannot remove what is not there!"
 
@@ -421,12 +415,27 @@ class Board(object):
     """
     def _create_point(self, point_x, point_y):
         return str(point_x + 1) + '-' + str(point_y + 1)
-
+    
+    """
+        ############ Added since assignment 3 ############
+    """
     def get_maybe_stone(self, point):
         return self.board_array[point[1]][point[0]]
     
     def set_maybe_stone(self, point, maybe_stone):
         self.board_array[point[1]][point[0]] = maybe_stone
+
+    def neighbor_chain(self, curr_stone, queue, visited):
+        point = queue.pop(0)
+        neighbors = self._valid_neighbors(point)
+        for neighbor in neighbors:
+            if neighbor not in visited and self.get_maybe_stone(neighbor) == curr_stone:
+                queue.append(neighbor)
+                visited.append(neighbor)
+        if len(queue) == 0:
+            return visited
+        else:
+            return self.neighbor_chain(curr_stone, queue, visited)
 
         
 
