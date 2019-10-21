@@ -195,23 +195,41 @@ class RuleChecker(object):
             return False
     
     def _is_valid_game_history(self, stone, opp_stone, boards):
+        boards = [Board(board) for board in boards]
         if len(boards) == 1:
-            if stone == "B" and self._is_board_empty(boards[0]): return True
+            if stone == "B" and boards[0]._is_board_empty(): return True
             else: return False
         elif len(boards) == 2:
             if stone == "W":
-                if self._is_board_empty(boards[1]):
-                    curr_board = Board(boards[0])
-                    if len(curr_board.get_points("W")) == 0 and 0 <= len(curr_board.get_points("B")) <= 1:
+                if boards[1]._is_board_empty():
+                    if len(boards[0].get_points("W")) == 0 and 0 <= len(boards[0].get_points("B")) <= 1:
                         return True
             return False
     
         else:
-            curr_board = Board(boards[0])
-            prev_board = Board(boards[1])
-            last_board = Board(boards[2])
+            curr_board = boards[0]
+            prev_board = boards[1]
+            last_board = boards[2]
+
+            curr_opp_stones = curr_board.get_points(opp_stone)
+            prev_opp_stones = prev_board.get_points(opp_stone)
+            opp_point = self._create_point(list(set(curr_opp_stones) - set(prev_opp_stones)))
+            if len(opp_point) == 1:
+                simulation_board = self._play_move(opp_stone, opp_point[0], prev_board.board_array)
+                if simulation_board == False: return False
+                if curr_board.board_array != simulation_board.board_array: return False
+                curr_stones = prev_board.get_points(stone)
+                prev_stones = last_board.get_points(stone)
+                player_point = self._create_point(list(set(curr_stones) - set(prev_stones)))
+                if len(opp_point) == 1:
+                    simulation_board = self._play_move(stone, player_point[0], last_board.board_array)
+                    if simulation_board == False: return False
+                    return prev_board.board_array != simulation_board.board_array
+            else: return False
 
 
+
+            '''
             # last turn was the opponent's
             # since no suicide, they should have increased their stone count by 1 on the board
             curr_opp_stones = curr_board.get_points(opp_stone)
@@ -229,7 +247,7 @@ class RuleChecker(object):
                 new_arr = self._remove_stones(stone, opp_point, new_arr)
 
                 # compare boards
-                if boards[0] != new_arr:
+                if boards[0].board_array != new_arr:
                     return False
                 
                 # turn before last was the current player's
@@ -248,7 +266,7 @@ class RuleChecker(object):
                     new_arr = self._remove_stones(opp_stone, player_point, new_arr)
 
                     # compare boards
-                    if boards[1] != new_arr:
+                    if boards[1].board_array != new_arr:
                         return False
                     else:
                         return True
@@ -258,6 +276,7 @@ class RuleChecker(object):
             
             else:
                 return False
+            '''
             
             
     def _get_opponent_stone(self, stone):
@@ -266,14 +285,11 @@ class RuleChecker(object):
         else:
             return "W"
 
-    def _is_board_empty(self, board_array):
-        board = Board(board_array)
-        return len(board.get_points(" ")) == board.BOARD_SIZE**2
+    
 
-    def _remove_stones(self, stone, point, board_array):
+    def _remove_stones(self, stone, point, board):
         # assume the stone has already been placed for the turn
         # stone is the type you are removing
-        board = Board(board_array)
         neighbors = board._valid_neighbors(point)
         for neighbor in neighbors:
             if board.get_maybe_stone(neighbor) == stone:
@@ -289,10 +305,17 @@ class RuleChecker(object):
 
     # actually implemented elsewhere in _verify_play and _is_valid_game_history
     def _play_move(self, stone, point, board_array):
-        # place stone
-        # remove opponents stones using _remove_stones
-        # verify that there are liberties
-        pass
+        simulation_board = Board(board_array)
+        placed = simulation_board.place(stone, point)
+        if placed == "This seat is taken!": return False
+        opp_stone = self._get_opponent_stone(stone)
+        new_arr = self._remove_stones(opp_stone, point, simulation_board)
+        #if the stone placed has a liberty return true, else return false due to suicide rule
+        if self._has_liberty(simulation_board, point): return simulation_board
+        else: return False
+        
+
+
 
     
 
@@ -436,6 +459,9 @@ class Board(object):
             return visited
         else:
             return self.neighbor_chain(curr_stone, queue, visited)
+
+    def _is_board_empty(self):
+        return len(self.get_points(" ")) == self.BOARD_SIZE**2
 
         
 
