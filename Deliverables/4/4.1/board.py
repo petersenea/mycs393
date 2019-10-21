@@ -179,6 +179,8 @@ class RuleChecker(object):
     
     def _is_valid_game_history(self, stone, opp_stone, boards):
         boards = [Board(board) for board in boards]
+        # check that every board has proper liberties first
+
         if len(boards) == 1:
             if stone == "B" and boards[0]._is_board_empty(): return True
             else: return False
@@ -194,31 +196,27 @@ class RuleChecker(object):
             prev_board = boards[1]
             last_board = boards[2]
 
+
             if curr_board.board_array == last_board.board_array: return False
 
             curr_opp_stones = curr_board.get_points(opp_stone)
             prev_opp_stones = prev_board.get_points(opp_stone)
             opp_point = list(set(curr_opp_stones) - set(prev_opp_stones))
             if len(opp_point) == 1:
-                # print('prev prev', prev_board.board_array)
                 simulation_board = self._play_move(opp_stone, self._create_point(opp_point[0]), copy(prev_board.board_array))
-                # print('post prev', prev_board.board_array)
                 if simulation_board == False: return False
                 if curr_board.board_array != simulation_board.board_array: return False
                 curr_stones = prev_board.get_points(stone)
                 prev_stones = last_board.get_points(stone)
                 player_point = list(set(curr_stones) - set(prev_stones))
-                # print('hello')
                 if len(player_point) == 1:
-                    # print('stone', stone, self._create_point(player_point[0]))
                     simulation_board = self._play_move(stone, self._create_point(player_point[0]), copy(last_board.board_array))
-                    # print('sim', simulation_board)
                     if simulation_board == False: return False
-                    # print('prev', prev_board.board_array)
-                    # print('sim', simulation_board.board_array)
                     return prev_board.board_array == simulation_board.board_array
                 elif prev_board.board_array == last_board.board_array:
-                    if prev_board._is_board_empty and stone != "B": return False
+                    if prev_board._is_board_empty() and stone != "B": 
+                        return False
+
                     return True
             elif curr_board.board_array == prev_board.board_array:
                 curr_stones = prev_board.get_points(stone)
