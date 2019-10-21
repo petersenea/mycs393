@@ -200,7 +200,6 @@ class RuleChecker(object):
             prev_opp_stones = prev_board.get_points(opp_stone)
             opp_point = list(set(curr_opp_stones) - set(prev_opp_stones))
             if len(opp_point) == 1:
-                # print('hi')
                 # print('prev prev', prev_board.board_array)
                 simulation_board = self._play_move(opp_stone, self._create_point(opp_point[0]), copy(prev_board.board_array))
                 # print('post prev', prev_board.board_array)
@@ -218,7 +217,9 @@ class RuleChecker(object):
                     # print('prev', prev_board.board_array)
                     # print('sim', simulation_board.board_array)
                     return prev_board.board_array == simulation_board.board_array
-                elif prev_board.board_array == last_board.board_array: return True
+                elif prev_board.board_array == last_board.board_array:
+                    if prev_board._is_board_empty and stone != "B": return False
+                    return True
             elif curr_board.board_array == prev_board.board_array:
                 curr_stones = prev_board.get_points(stone)
                 prev_stones = last_board.get_points(stone)
