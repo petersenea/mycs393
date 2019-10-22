@@ -1,5 +1,6 @@
 from copy import deepcopy as copy
 from board import Board
+import numpy as np
 
 
 class RuleChecker(object):
@@ -63,7 +64,8 @@ class RuleChecker(object):
 
     
     def _ko_rule_violated(self, board1, board2):
-        return board1.board_array == board2.board_array
+        return np.array_equal(board1.board_array, board2.board_array)
+        # return board1.board_array == board2.board_array
 
     def _is_valid_game_history(self, stone, opp_stone, boards):
         # boards = [Board(board) for board in boards]
@@ -99,9 +101,9 @@ class RuleChecker(object):
         player_point = [i for i in curr_stones if i not in prev_stones]
         if len(player_point) == 1:
             simulation_board = self._play_move(stone, player_point[0], copy(prev_board))
-            if simulation_board and simulation_board.board_array == curr_board.board_array: return True, pass_count
+            if simulation_board and np.array_equal(simulation_board.board_array, curr_board.board_array): return True, pass_count
             else: return False, pass_count
-        elif curr_board.board_array == prev_board.board_array:
+        elif np.array_equal(curr_board.board_array, prev_board.board_array):
             return True, pass_count + 1
         else: return False, pass_count
 

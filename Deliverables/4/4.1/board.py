@@ -6,7 +6,8 @@ class Board(object):
     BOARD_SIZE = 19  
 
     def __init__(self, board_array):
-        self.board_array = board_array
+
+        self.board_array = np.array(board_array)
     
     """
         returns:
@@ -107,9 +108,8 @@ class Board(object):
         CHANGED: returns a list of [x,y] lists (unordered)
     """
     def get_points(self, maybe_stone):
-        np_array = np.array(self.board_array)
 
-        points = np.where(np_array == maybe_stone)
+        points = np.where(self.board_array == maybe_stone)
 
         points_coords = [[points[1][i], points[0][i]] for i in range(len(points[0]))]
 
