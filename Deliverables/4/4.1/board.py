@@ -209,7 +209,7 @@ class RuleChecker(object):
                 simulation_board = self._play_move(opp_stone, opp_point[0], copy(prev_board.board_array))
                 if simulation_board == False: return False
                 if curr_board.board_array != simulation_board.board_array: return False
-                
+
                 curr_stones = prev_board.get_points(stone)
                 prev_stones = last_board.get_points(stone)
 
@@ -266,7 +266,7 @@ class RuleChecker(object):
     def _play_move(self, stone, point, board_array):
         simulation_board = Board(board_array)
         placed = simulation_board.place(stone, point)
-        if placed == "This seat is taken!": return False
+        if placed == False: return False
         # print('reach')
         opp_stone = self._get_opponent_stone(stone)
         new_arr = self._remove_stones(opp_stone, point, simulation_board)
@@ -357,30 +357,30 @@ class Board(object):
 
 
     """
-        returns:
+        CHANGED returns:
             * a board array with the new Stone at Point, if that Point was previously empty
-            * "This seat is taken!", if that Point was previously filled with a Stone
+            * False, if that Point was previously filled with a Stone
     """
     def place(self, stone, point):
         if self.get_maybe_stone(point) == self.EMPTY_STONE:
             self.set_maybe_stone(point, stone)
             return self.board_array
         else: 
-            return "This seat is taken!"
+            return False
 
     """
-        returns:
+        CHNAGED returns:
             * a board array with an Empty at Point, if that Point was previously occupied by the given Stone
-            * "I am just a board! I cannot remove what is not there!", if that Point was previously not occupied by the given Stone
+            * False, if that Point was previously not occupied by the given Stone
     """
     def remove(self, stone, point):
         if self.get_maybe_stone(point) == stone:
             self.set_maybe_stone(point, self.EMPTY_STONE)
             return self.board_array
-        else: return "I am just a board! I cannot remove what is not there!"
+        else: return False
 
     """
-        returns a list of lexigraphically ordered Points where the given MaybeStone exists on the board
+        CHANGED: returns a list of [x,y] lists (unordered)
     """
     def get_points(self, maybe_stone):
         np_array = np.array(self.board_array)
