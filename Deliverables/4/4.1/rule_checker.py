@@ -94,7 +94,7 @@ class RuleChecker(object):
             else: return False
 
 
-
+    ##Elizabeth after
     def _validate_turn(self, curr_board, prev_board, stone, pass_count):
         curr_stones = curr_board.get_points(stone)
         prev_stones = prev_board.get_points(stone)
