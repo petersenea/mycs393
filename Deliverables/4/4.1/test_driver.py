@@ -1,4 +1,4 @@
-from board import InterfaceWrapper
+from interface_wrapper import InterfaceWrapper
 import sys
 import json
 
