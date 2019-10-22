@@ -102,13 +102,6 @@ class InterfaceWrapper(object):
         else:
             raise BaseException("Boards array is not valid length.")
 
-    """
-        returns a list of ints representing a given Point from a string
-    """
-    def _create_point(self, point):
-        return [int(i) - 1 for i in point.split('-')]
-
-
     
 
 class RuleChecker(object):
@@ -282,14 +275,13 @@ class RuleChecker(object):
     # actually implemented elsewhere in _verify_play and _is_valid_game_history
     def _play_move(self, stone, point, board_array):
         simulation_board = Board(board_array)
-        placed = simulation_board.place(stone, point)
-        if placed == False: return False
-        # print('reach')
-        opp_stone = self._get_opponent_stone(stone)
-        new_arr = self._remove_stones(opp_stone, point, simulation_board)
-        #if the stone placed has a liberty return true, else return false due to suicide rule
-        if self._has_liberty(simulation_board, point): return simulation_board
-        else: return False
+        is_place_successful = simulation_board.place(stone, point)
+        if is_place_successful:
+            opp_stone = self._get_opponent_stone(stone)
+            self._remove_stones(opp_stone, point, simulation_board)
+            #if the stone placed has a liberty return true, else return false due to suicide rule
+            if self._has_liberty(simulation_board, point): return simulation_board
+        return False
         
 
 
@@ -408,13 +400,7 @@ class Board(object):
         points_coords = list(zip(points[1], points[0]))#[[points[1][i], points[0][i]] for i in range(len(points[0]))]
 
         return points_coords
-
-    """
-        returns the Point object for the coordinate integers point_x and point_y
-    """
-    def _create_point(self, point_x, point_y):
-        return str(point_x + 1) + '-' + str(point_y + 1)
-    
+   
     """
         ############ Added since assignment 3 ############
     """
