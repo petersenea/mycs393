@@ -173,17 +173,6 @@ class RuleChecker(object):
             else: return self._is_valid_game_history(stone, self._get_opponent_stone(stone), boards)
         else: return False
 
-
-        '''
-        # check if the boards array history is valid
-        if self._is_valid_game_history(stone, opp_stone, boards):
-            next_board = self._play_move(stone, point, copy(boards[0]))
-            if next_board == False: return False
-            elif len(boards) > 1 and self._ko_rule_violated(next_board.board_array, boards[1]): return False
-            else: return True
-        else:
-            return False
-        '''
     
     def _ko_rule_violated(self, board_arr1, board_arr2):
         return board_arr1 == board_arr2
@@ -212,48 +201,6 @@ class RuleChecker(object):
             if prev_board._is_board_empty() and stone != "B": 
                 return False
 
-            '''
-            curr_opp_stones = curr_board.get_points(opp_stone)
-            prev_opp_stones = prev_board.get_points(opp_stone)
-
-            # opp_point = list(set(curr_opp_stones) - set(prev_opp_stones))
-            opp_point = [i for i in curr_opp_stones if i not in prev_opp_stones]
-
-            if len(opp_point) == 1:
-                simulation_board = self._play_move(opp_stone, opp_point[0], copy(prev_board.board_array))
-                if simulation_board == False: return False
-                if curr_board.board_array != simulation_board.board_array: return False
-
-                curr_stones = prev_board.get_points(stone)
-                prev_stones = last_board.get_points(stone)
-
-                # player_point = [list(set(curr_stones) - set(prev_stones))]
-                player_point = [i for i in curr_stones if i not in prev_stones]
-
-                if len(player_point) == 1:
-                    simulation_board = self._play_move(stone, player_point[0], copy(last_board.board_array))
-                    if simulation_board == False: return False
-                    return prev_board.board_array == simulation_board.board_array
-                elif prev_board.board_array == last_board.board_array:
-                    if prev_board._is_board_empty() and stone != "B": 
-                        return False
-
-                    return True
-            elif curr_board.board_array == prev_board.board_array:
-                curr_stones = prev_board.get_points(stone)
-                prev_stones = last_board.get_points(stone)
-
-                # player_point = list(set(curr_stones) - set(prev_stones))
-                player_point = [i for i in curr_stones if i not in prev_stones]
-
-                if len(player_point) == 1:
-                    simulation_board = self._play_move(stone, player_point[0], copy(last_board.board_array))
-                    if simulation_board == False: return False
-                    return prev_board.board_array == simulation_board.board_array
-                else: return False
-            else:
-                return False
-            '''
             pass_count = 0
             valid1, pass_count = self._validate_turn(curr_board, prev_board, opp_stone, pass_count)
             valid2, pass_count = self._validate_turn(prev_board, last_board, stone, pass_count)
