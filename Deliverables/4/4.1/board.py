@@ -133,7 +133,7 @@ class RuleChecker(object):
     def _calc_score(self, board):
         b_points = len(board.get_points('B'))
         w_points = len(board.get_points('W'))
-        empty_spaces = board.get_points(' ')#[self._create_point(space) for space in board.get_points(' ')]   
+        empty_spaces = board.get_points(' ')
 
         #for every empty space not already checked, check to see if it and its neighbor chain is reachable by either opponent     
         while len(empty_spaces) > 0:
@@ -166,18 +166,27 @@ class RuleChecker(object):
         point = self._create_point(play[0])
         boards = play[1]
 
-        current_board = Board(boards[0])
 
+        next_board = self._play_move(stone, point, copy(boards[0]))
+        if next_board:
+            if len(boards) > 1 and self._ko_rule_violated(next_board.board_array, boards[1]): return False
+            else: return self._is_valid_game_history
+        else: return False
+
+
+        '''
         # check if the boards array history is valid
         if self._is_valid_game_history(stone, opp_stone, boards):
             next_board = self._play_move(stone, point, copy(boards[0]))
             if next_board == False: return False
-            elif len(boards) > 1 and next_board.board_array == boards[1]: return False
+            elif len(boards) > 1 and self._ko_rule_violated(next_board.board_array, boards[1]): return False
             else: return True
         else:
             return False
+        '''
     
-
+    def _ko_rule_violated(self, board_arr1, board_arr2):
+        return board_arr1 == board_arr2
 
     def _is_valid_game_history(self, stone, opp_stone, boards):
         boards = [Board(board) for board in boards]
