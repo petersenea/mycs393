@@ -209,7 +209,10 @@ class RuleChecker(object):
             last_board = boards[2]
 
             if self._ko_rule_violated(curr_board.board_array, last_board.board_array): return False
+            if prev_board._is_board_empty() and stone != "B": 
+                return False
 
+            '''
             curr_opp_stones = curr_board.get_points(opp_stone)
             prev_opp_stones = prev_board.get_points(opp_stone)
 
@@ -250,6 +253,27 @@ class RuleChecker(object):
                 else: return False
             else:
                 return False
+            '''
+            pass_count = 0
+            valid1, pass_count = self._validate_turn(curr_board, prev_board, opp_stone, pass_count)
+            valid2, pass_count = self._validate_turn(prev_board, last_board, stone, pass_count)
+            if valid1 and valid2 and pass_count < 2: return True
+            else: return False
+
+
+
+    def _validate_turn(self, board1, board2, stone, pass_count):
+        curr_stones = board1.get_points(stone)
+        prev_stones = board2.get_points(stone)
+        player_point = [i for i in curr_stones if i not in prev_stones]
+        if len(player_point) == 1:
+            simulation_board = self._play_move(stone, player_point[0], copy(board2.board_array))
+            if simulation_board and simulation_board.board_array == board1.board_array: return True, pass_count
+            else: return False, pass_count
+        elif board1.board_array == board2.board_array:
+            return True, pass_count + 1
+        else: return False, pass_count
+
 
     def _check_board_liberities(self, board):
         taken_intersections = board.get_points('B') + board.get_points('W')
