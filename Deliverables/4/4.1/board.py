@@ -124,12 +124,10 @@ class RuleChecker(object):
         return self.ret_value
 
     def _calc_score(self, board):
-        print("enter")
         b_points = len(board.get_points('B'))
         w_points = len(board.get_points('W'))
         empty_spaces = board.get_points(' ')
 
-        print("while")
         #for every empty space not already checked, check to see if it and its neighbor chain is reachable by either opponent     
         while len(empty_spaces) > 0:
             space = empty_spaces.pop(0)
@@ -137,14 +135,11 @@ class RuleChecker(object):
             #find list of all the points with the same MaybeStone that the point is connected to, as they will all be reachable
             #by the same MaybeStones
             neighbor_chain = board.neighbor_chain(board.get_maybe_stone(space), [space], [space])
-            print(neighbor_chain)
-            print("start reachable")
             if board.is_reachable(space, 'B'):
                 if not board.is_reachable(space,'W'):
                     b_points += len(neighbor_chain)
             elif board.is_reachable(space,'W'):
                 w_points += len(neighbor_chain)
-            print("end reachable")
 
             # do not need to check if each one of a chain is reachable, as they are already accounted for
             # remove empty spaces that have already been checked
