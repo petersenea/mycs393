@@ -117,8 +117,7 @@ class RuleChecker(object):
                 self.ret_value = self._verify_play(input_)
         else:
             # calculate score of input_
-            board = Board(input_)
-            self.ret_value = self._calc_score(board)
+            self.ret_value = self._calc_score(Board(input_))
 
     def ret(self):
         return self.ret_value
@@ -153,24 +152,23 @@ class RuleChecker(object):
     
     def _verify_play(self, input_):
         stone = input_[0]
-        # opp_stone = self._get_opponent_stone(stone)
         play = input_[1]
         point = self._create_point(play[0])
-        boards = play[1]
-
+        boards = [Board(board) for board in play[1]]
 
         next_board = self._play_move(stone, point, copy(boards[0]))
+
         if next_board:
-            if len(boards) > 1 and self._ko_rule_violated(next_board.board_array, boards[1]): return False
+            if len(boards) > 1 and self._ko_rule_violated(next_board, boards[1]): return False
             else: return self._is_valid_game_history(stone, self._get_opponent_stone(stone), boards)
         else: return False
 
     
-    def _ko_rule_violated(self, board_arr1, board_arr2):
-        return board_arr1 == board_arr2
+    def _ko_rule_violated(self, board1, board2):
+        return board1.board_array == board2.board_array
 
     def _is_valid_game_history(self, stone, opp_stone, boards):
-        boards = [Board(board) for board in boards]
+        # boards = [Board(board) for board in boards]
         # check that every board has proper liberties first
         
         for board in boards:
@@ -185,31 +183,27 @@ class RuleChecker(object):
             return False
     
         else:
-            curr_board = boards[0]
-            prev_board = boards[1]
-            last_board = boards[2]
-
-            if self._ko_rule_violated(curr_board.board_array, last_board.board_array): return False
-            if prev_board._is_board_empty() and stone != "B": 
+            if self._ko_rule_violated(boards[0], boards[2]): return False
+            if boards[1]._is_board_empty() and stone != "B": 
                 return False
 
             pass_count = 0
-            valid1, pass_count = self._validate_turn(curr_board, prev_board, opp_stone, pass_count)
-            valid2, pass_count = self._validate_turn(prev_board, last_board, stone, pass_count)
+            valid1, pass_count = self._validate_turn(boards[0], boards[1], opp_stone, pass_count)
+            valid2, pass_count = self._validate_turn(boards[1], boards[2], stone, pass_count)
             if valid1 and valid2 and pass_count < 2: return True
             else: return False
 
 
 
-    def _validate_turn(self, board1, board2, stone, pass_count):
-        curr_stones = board1.get_points(stone)
-        prev_stones = board2.get_points(stone)
+    def _validate_turn(self, curr_board, prev_board, stone, pass_count):
+        curr_stones = curr_board.get_points(stone)
+        prev_stones = prev_board.get_points(stone)
         player_point = [i for i in curr_stones if i not in prev_stones]
         if len(player_point) == 1:
-            simulation_board = self._play_move(stone, player_point[0], copy(board2.board_array))
-            if simulation_board and simulation_board.board_array == board1.board_array: return True, pass_count
+            simulation_board = self._play_move(stone, player_point[0], copy(prev_board))
+            if simulation_board and simulation_board.board_array == curr_board.board_array: return True, pass_count
             else: return False, pass_count
-        elif board1.board_array == board2.board_array:
+        elif curr_board.board_array == prev_board.board_array:
             return True, pass_count + 1
         else: return False, pass_count
 
@@ -243,7 +237,8 @@ class RuleChecker(object):
             * point: the Point where the opposing stone has just been placed
             * board: the game Board
         returns:
-            * board_array: the board_array of board with the apporpriate Stones removed
+            * True, if remove is successful
+            * False, otherwise
     """
     def _remove_stones(self, stone, point, board):
         # gets the direct neighbors of point
@@ -255,9 +250,9 @@ class RuleChecker(object):
                 if not self._has_liberty(board, neighbor):
                     neighbor_chain = board.neighbor_chain(stone, [neighbor], [neighbor])
                     for point in neighbor_chain:
-                        board.remove(stone, point)
-
-        return board.board_array
+                        is_remove_successful = board.remove(stone, point)
+                        if not is_remove_successful: return False
+        return True
 
     """
         takes in:
@@ -272,12 +267,12 @@ class RuleChecker(object):
 
 
     # actually implemented elsewhere in _verify_play and _is_valid_game_history
-    def _play_move(self, stone, point, board_array):
-        simulation_board = Board(board_array)
+    def _play_move(self, stone, point, simulation_board):
         is_place_successful = simulation_board.place(stone, point)
         if is_place_successful:
             opp_stone = self._get_opponent_stone(stone)
             self._remove_stones(opp_stone, point, simulation_board)
+
             #if the stone placed has a liberty return true, else return false due to suicide rule
             if self._has_liberty(simulation_board, point): return simulation_board
         return False
@@ -370,7 +365,6 @@ class Board(object):
     def place(self, stone, point):
         if self.get_maybe_stone(point) == self.EMPTY_STONE:
             self.set_maybe_stone(point, stone)
-            # return self.board_array
             return True
         else: 
             return False
@@ -384,7 +378,6 @@ class Board(object):
     def remove(self, stone, point):
         if self.get_maybe_stone(point) == stone:
             self.set_maybe_stone(point, self.EMPTY_STONE)
-            # return self.board_array
             return True
         else: return False
 
@@ -396,7 +389,7 @@ class Board(object):
 
         points = np.where(np_array == maybe_stone)
 
-        points_coords = [[points[1][i], points[0][i]] for i in range(len(points[0]))]#list(zip(points[1], points[0]))
+        points_coords = [[points[1][i], points[0][i]] for i in range(len(points[0]))]
 
         return points_coords
    
