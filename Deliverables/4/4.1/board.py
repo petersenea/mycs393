@@ -177,9 +177,14 @@ class RuleChecker(object):
         else:
             return False
     
+
+
     def _is_valid_game_history(self, stone, opp_stone, boards):
         boards = [Board(board) for board in boards]
         # check that every board has proper liberties first
+        
+        for board in boards:
+            if not self._check_board_liberities(board): return False
 
         if len(boards) == 1:
             if stone == "B" and boards[0]._is_board_empty(): return True
@@ -228,7 +233,7 @@ class RuleChecker(object):
             elif curr_board.board_array == prev_board.board_array:
                 curr_stones = prev_board.get_points(stone)
                 prev_stones = last_board.get_points(stone)
-                
+
                 # player_point = list(set(curr_stones) - set(prev_stones))
                 player_point = [i for i in curr_stones if i not in prev_stones]
 
@@ -239,7 +244,22 @@ class RuleChecker(object):
                 else: return False
             else:
                 return False
+
+    def _check_board_liberities(self, board):
+        taken_intersections = board.get_points('B') + board.get_points('W')
+
+        #for every empty space not already checked, check to see if it and its neighbor chain is reachable by either opponent     
+        while len(taken_intersections) > 0:
+            intersection = taken_intersections.pop(0)
+
+            if not self._has_liberty(board, intersection): return False
+
+            #find list of all the points with the same MaybeStone that the point is connected to, as if one has a liberty all do
+            neighbor_chain = board.neighbor_chain(board.get_maybe_stone(intersection), [intersection], [intersection])          
             
+            taken_intersections = [i for i in taken_intersections if i not in neighbor_chain]
+
+        return True      
             
     def _get_opponent_stone(self, stone):
         if stone == "W":
@@ -248,19 +268,36 @@ class RuleChecker(object):
             return "W"
 
     
-
+    """
+        takes in:
+            * stone: the Stone that will be removed
+            * point: the Point where the opposing stone has just been placed
+            * board: the game Board
+        returns:
+            * board_array: the board_array of board with the apporpriate Stones removed
+    """
     def _remove_stones(self, stone, point, board):
-        # assume the stone has already been placed for the turn
-        # stone is the type you are removing
+        # gets the direct neighbors of point
         neighbors = board._valid_neighbors(point)
+
+        # check that each neighbor has a liberty, if not remove the whole neighbor_chain
         for neighbor in neighbors:
             if board.get_maybe_stone(neighbor) == stone:
-                neighbor_chain = board.neighbor_chain(stone, [neighbor], [neighbor])
                 if not self._has_liberty(board, neighbor):
+                    neighbor_chain = board.neighbor_chain(stone, [neighbor], [neighbor])
                     for point in neighbor_chain:
                         board.remove(stone, point)
+
         return board.board_array
 
+    """
+        takes in:
+            * board:
+            * point:
+        returns:
+            * False
+            * True
+    """
     def _has_liberty(self, board, point):
         return board.is_reachable(point, ' ')
 
@@ -278,9 +315,6 @@ class RuleChecker(object):
         else: return False
         
 
-
-
-    
 
 class Board(object):
     EMPTY_STONE = " "
@@ -391,10 +425,6 @@ class Board(object):
         points = np.where(np_array == maybe_stone)
 
         points_coords = [[points[1][i], points[0][i]] for i in range(len(points[0]))]
-             
-        #points_coords = [self._create_point(points[1][i], points[0][i]) for i in range(len(points[0]))]
-
-        #points_coords.sort()
 
         return points_coords
 
