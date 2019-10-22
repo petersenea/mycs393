@@ -370,27 +370,31 @@ class Board(object):
         return valid_lst
 
 
-    """
-        CHANGED returns:
-            * a board array with the new Stone at Point, if that Point was previously empty
+    """ CHANGED 
+        mutates self.board_array with the new Stone at Point, if that Point was previously empty
+        returns:
+            * True, if mutation occurs
             * False, if that Point was previously filled with a Stone
     """
     def place(self, stone, point):
         if self.get_maybe_stone(point) == self.EMPTY_STONE:
             self.set_maybe_stone(point, stone)
-            return self.board_array
+            # return self.board_array
+            return True
         else: 
             return False
 
-    """
-        CHNAGED returns:
-            * a board array with an Empty at Point, if that Point was previously occupied by the given Stone
+    """ CHANGED
+        mutates self.board_array with an Empty at Point, if that Point was previously occupied by the given Stone
+        returns:
+            * True, if mutation occurs
             * False, if that Point was previously not occupied by the given Stone
     """
     def remove(self, stone, point):
         if self.get_maybe_stone(point) == stone:
             self.set_maybe_stone(point, self.EMPTY_STONE)
-            return self.board_array
+            # return self.board_array
+            return True
         else: return False
 
     """
@@ -401,7 +405,7 @@ class Board(object):
 
         points = np.where(np_array == maybe_stone)
 
-        points_coords = [[points[1][i], points[0][i]] for i in range(len(points[0]))]
+        points_coords = list(zip(points[1], points[0]))#[[points[1][i], points[0][i]] for i in range(len(points[0]))]
 
         return points_coords
 
