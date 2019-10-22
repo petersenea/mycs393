@@ -161,7 +161,7 @@ class RuleChecker(object):
     
     def _verify_play(self, input_):
         stone = input_[0]
-        opp_stone = self._get_opponent_stone(stone)
+        # opp_stone = self._get_opponent_stone(stone)
         play = input_[1]
         point = self._create_point(play[0])
         boards = play[1]
@@ -170,7 +170,7 @@ class RuleChecker(object):
         next_board = self._play_move(stone, point, copy(boards[0]))
         if next_board:
             if len(boards) > 1 and self._ko_rule_violated(next_board.board_array, boards[1]): return False
-            else: return self._is_valid_game_history
+            else: return self._is_valid_game_history(stone, self._get_opponent_stone(stone), boards)
         else: return False
 
 
@@ -199,10 +199,8 @@ class RuleChecker(object):
             if stone == "B" and boards[0]._is_board_empty(): return True
             else: return False
         elif len(boards) == 2:
-            if stone == "W":
-                if boards[1]._is_board_empty():
-                    if len(boards[0].get_points("W")) == 0 and 0 <= len(boards[0].get_points("B")) <= 1:
-                        return True
+            if stone == "W" and boards[1]._is_board_empty():
+                if len(boards[0].get_points("W")) == 0 and 0 <= len(boards[0].get_points("B")) <= 1: return True
             return False
     
         else:
@@ -210,8 +208,7 @@ class RuleChecker(object):
             prev_board = boards[1]
             last_board = boards[2]
 
-
-            if curr_board.board_array == last_board.board_array: return False
+            if self._ko_rule_violated(curr_board.board_array, last_board.board_array): return False
 
             curr_opp_stones = curr_board.get_points(opp_stone)
             prev_opp_stones = prev_board.get_points(opp_stone)
