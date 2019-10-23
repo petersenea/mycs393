@@ -118,12 +118,22 @@ class Board(object):
     """
         ############ Added since assignment 3 ############
     """
+
+    """
+        returns the MaybeStone at the given point
+    """
     def get_maybe_stone(self, point):
         return self.board_array[point[1]][point[0]]
     
+    """
+        sets a given point to a MaybeStone
+    """
     def set_maybe_stone(self, point, maybe_stone):
         self.board_array[point[1]][point[0]] = maybe_stone
 
+    """
+        returns a list of Points that are linked together (aka a chain of stones)
+    """
     def neighbor_chain(self, curr_stone, queue, visited):
         point = queue.pop(0)
         neighbors = self._valid_neighbors(point)
@@ -136,6 +146,9 @@ class Board(object):
         else:
             return self.neighbor_chain(curr_stone, queue, visited)
 
+    """
+        returns true if the entire board is empty, otherwise returns false 
+    """
     def _is_board_empty(self):
         return len(self.get_points(" ")) == self.BOARD_SIZE**2
 

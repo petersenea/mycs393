@@ -68,7 +68,6 @@ class InterfaceWrapper(object):
         if 1 > point[0] > self.BOARD_SIZE or 1 > point[1] > self.BOARD_SIZE:
             raise BaseException('Points are not on board')
 
-
     """
         verifies that a given Stone is a valid Stone
     """
@@ -84,7 +83,9 @@ class InterfaceWrapper(object):
         if stone not in self.MAYBE_STONES:
             raise BaseException("not a valid MaybeStone.")
 
-
+    """
+        verifies that a Move is a valid Move
+    """
     def _check_move(self, move):
         if len(move) == 2:
             # check [Point, Boards]
@@ -93,7 +94,11 @@ class InterfaceWrapper(object):
         elif move != "pass":
             raise BaseException("Move is not valid.")
 
-    
+    """
+        verifies that 
+            (1) the boards array is the proper length
+            (2) every board is a valid board in boards array
+    """
     def _check_boards(self, boards_arr):
         if 1 <= len(boards_arr) <= 3:
             [self._verify_board(x) for x in boards_arr]
