@@ -1,5 +1,5 @@
 import numpy as np   
-
+from operator import itemgetter
 
 class Board(object):
     EMPTY_STONE = " "
@@ -105,13 +105,16 @@ class Board(object):
         else: return False
 
     """
-        CHANGED: returns a list of [x,y] lists (unordered)
+        CHANGED: returns a list of [x,y] lists (sorted by column first, then row)
     """
     def get_points(self, maybe_stone):
 
         points = np.where(self.board_array == maybe_stone)
 
         points_coords = [[points[1][i], points[0][i]] for i in range(len(points[0]))]
+
+        points_coords = sorted(points_coords, key=itemgetter(0))
+
 
         return points_coords
    

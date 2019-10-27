@@ -10,31 +10,24 @@ class RuleChecker(object):
     def _create_point(self, point):
         return [int(i) - 1 for i in point.split('-')]
     
-    """ CHANGED
+    """ CHANGED no longer validates game history
         takes in:
             * input_: represented by [stone, play] where play is [point, boards]
         returns:
             * True, if action and board history are valid
             * False, otherwise
     """
-    def _verify_play(self, stone, point, boards = []):
-        if point == "pass": return True
-        #don't think we will need, will be passing point list
-        #point = self._create_point(point)
+    def verify_play(self, stone, point, boards = []):
+
         boards = [Board(board) for board in boards]
 
         #produce an error (False) or a new board with the new play
         next_board = self._play_move(stone, point, copy(boards[0]))
 
         #if play is valid (returns a board instead of false), check if ko rule is violated and if history is invalid
-        #if no rules are broken return true, else return false
         if next_board:
             if (len(boards) > 1 and self._ko_rule_violated(next_board, boards[1])): return False
             else: return True
-
-            # CHANGED THIS:
-            # else: return self._is_valid_game_history(stone, self._get_opponent_stone(stone), boards)
-            #else: return True
 
         else: return False
     
