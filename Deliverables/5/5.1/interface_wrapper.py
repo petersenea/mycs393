@@ -23,10 +23,10 @@ class InterfaceWrapper(object):
         return self.ret_value
         
     """
-        input_ takes the format [Stone, Move] or Board
+        input_ takes the format ["register"], ["receive-stones", Stone], or ["make-a-move", Boards]
         verifies the input_:
             (1) is a list
-            (2) is either of length 2 or a Board
+            (2) is either of length 1 or 2
             (3) The Board is a valid Board
             (4) The Stone is a valid Stone
             (5) The Move is a valid Move
@@ -35,15 +35,31 @@ class InterfaceWrapper(object):
 
         if type(input_) != list: 
             raise BaseException("input_ is not of type list.")
+        
+        if len(input_) == 1:
+            if input_[0] != "register":
+                raise BaseException("input_ is of length 1, but is not 'register'.")
 
         if len(input_) == 2:
-            # check if valid Stone:
-            self._check_stone(input_[0])
-            # check if valid Move:
-            self._check_move(input_[1])
 
+            if input_[0] == "receive-stones":
+                self._check_stone(input_[1])
+            
+            elif input_[0] == "make-a-move":
+                self._check_boards(input_[1])
+            
+            else:
+                BaseException("input_ is of length 2, but is otherwise invalid.")
+
+            # check if valid Stone:
+            # self._check_stone(input_[0])
+            # check if valid Move:
+            # self._check_move(input_[1])
+
+        # else:
+        #     self._verify_board(input_)
         else:
-            self._verify_board(input_)
+            raise BaseException("input_ is not of length 1 or 2.")
             
     """
         verifies the board_array:
