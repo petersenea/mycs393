@@ -8,9 +8,10 @@ class Player(object):
     """
         move: [Point, Boards]
     """
-    def make_a_move(self, move):
+    def make_a_move(self, board)#move):
         # check valid history
-        rule_checker = RuleChecker([self.stone, move])
+        for point in 
+        rule_checker = RuleChecker(self.stone, point, move)#[self.stone, move])
 
 
     def get_name(self):

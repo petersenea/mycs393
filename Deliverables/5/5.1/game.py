@@ -17,7 +17,7 @@ class Game(object):
 
         # move = [Point, Boards]
         for move in make_a_moves:
-            self.ret_list.append(self.player_1.make_a_move(move))
+            self.ret_list.append(self.player_1.make_a_move(point, move)#move))
 
     def ret(self):
         return self.ret_list
