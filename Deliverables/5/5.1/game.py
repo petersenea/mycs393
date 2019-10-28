@@ -2,7 +2,9 @@
 from player import Player
 
 class Game(object):
-
+    #temporary, currently just creates a player with the give stone
+    #then calls player.make_a_move on each make_a_move imputed
+    #returns a list of the results
     def __init__(self, _input):
         register = _input[0]
         receive_stones = _input[1]
