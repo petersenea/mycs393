@@ -155,6 +155,9 @@ class Board(object):
     def _is_board_empty(self):
         return len(self.get_points(self.EMPTY_STONE)) == self.BOARD_SIZE**2
 
+    """
+        returns list of empty intersections ordered by increasing column first, then row
+    """
     def get_empty_spots(self):
         return self.get_points(self.EMPTY_STONE)
         
