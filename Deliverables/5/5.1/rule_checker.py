@@ -1,4 +1,4 @@
-from copy import deepcopy as copy
+import copy
 from board import Board
 import numpy as np
 
@@ -19,10 +19,10 @@ class RuleChecker(object):
     """
     def verify_play(self, stone, point, boards = []):
 
-        boards = [Board(board) for board in boards]
+        #boards = [Board(board) for board in boards]
 
         #produce an error (False) or a new board with the new play
-        next_board = self._play_move(stone, point, copy(boards[0]))
+        next_board = self.play_move(stone, point, copy.deepcopy(boards[0]))
 
         #if play is valid (returns a board instead of false), check if ko rule is violated and if history is invalid
         if next_board:
@@ -54,7 +54,7 @@ class RuleChecker(object):
     def is_valid_game_history(self, stone, boards):
         # ADDED THIS:
         # create opp-stone
-        boards = [Board(board) for board in boards]
+        #boards = [Board(board) for board in boards]
         opp_stone = self._get_opponent_stone(stone)
 
         # check that every board has proper liberties first, if not the board history is invalid        
@@ -108,7 +108,7 @@ class RuleChecker(object):
         prev_stones = prev_board.get_points(stone)
         player_point = [i for i in curr_stones if i not in prev_stones]
         if len(player_point) == 1:
-            simulation_board = self._play_move(stone, player_point[0], copy(prev_board))
+            simulation_board = self.play_move(stone, player_point[0], copy.deepcopy(prev_board))
             if simulation_board and np.array_equal(simulation_board.board_array, curr_board.board_array): return True, pass_count
             else: return False, pass_count
         else: return False, pass_count
@@ -192,7 +192,7 @@ class RuleChecker(object):
             * True, if the move is successful
             * False, otherwise
     """
-    def _play_move(self, stone, point, simulation_board):
+    def play_move(self, stone, point, simulation_board):
         is_place_successful = simulation_board.place(stone, point)
         if is_place_successful:
             opp_stone = self._get_opponent_stone(stone)

@@ -11,12 +11,12 @@ class Player(object):
     """
     def make_a_move(self, boards):
         # check valid history
+        boards = [Board(x) for x in boards]
         rule_checker = RuleChecker()
         if not rule_checker.is_valid_game_history(self.stone, boards):
             return "This history makes no sense!"
         
-        curr_board = Board(boards[0])
-        curr_empties = curr_board.get_points(" ")
+        curr_empties = boards[0].get_empty_spots()
 
         for empty in curr_empties:
             if rule_checker.verify_play(self.stone, empty, boards):
@@ -28,10 +28,6 @@ class Player(object):
     """
     def _create_point(self, point_x, point_y):
         return str(point_x + 1) + '-' + str(point_y + 1) 
-
-
-
-
 
 
     def get_name(self):

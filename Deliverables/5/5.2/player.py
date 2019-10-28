@@ -18,16 +18,18 @@ class Player(object):
         rule_checker = RuleChecker()
         if not rule_checker.is_valid_game_history(self.stone, boards):
             return "This history makes no sense!"
-        curr_board = boards[0]
-        curr_empties = curr_board.get_empty_spots()
-    
+
+        curr_empties = boards[0].get_empty_spots()
+
+        #find first move that allows capture within n moves
         for empty in curr_empties:
             if self.choose_move(copy.deepcopy(boards), self.n, empty):
                 return self._create_point(empty[0], empty[1])
+        #if there is no move which allows a capture, pick first available valid spot
         for empty in curr_empties:
             if rule_checker.verify_play(self.stone, empty, boards):
                 return self._create_point(empty[0], empty[1])
-
+        #if no valid moves, return "pass"
         return "pass"
     
     """

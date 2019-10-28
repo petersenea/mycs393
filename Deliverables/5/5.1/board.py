@@ -155,5 +155,6 @@ class Board(object):
     def _is_board_empty(self):
         return len(self.get_points(" ")) == self.BOARD_SIZE**2
 
-        
+    def get_empty_spots(self):
+        return self.get_points(self.EMPTY_STONE)
 
