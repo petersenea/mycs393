@@ -54,7 +54,7 @@ class RuleChecker(object):
     def is_valid_game_history(self, stone, boards):
         # ADDED THIS:
         # create opp-stone
-        boards = [Board(board) for board in boards]
+        #boards = [Board(board) for board in boards]
         opp_stone = self._get_opponent_stone(stone)
 
         # check that every board has proper liberties first, if not the board history is invalid        
