@@ -22,7 +22,10 @@ class Player(object):
         for empty in curr_empties:
             if self.choose_move(boards, self.n, empty):
                 return self._create_point(empty[0], empty[1])
-        
+        for empty in curr_empties:
+            if rule_checker.verify_play(self.stone, empty, [Board(x) for x in boards]):
+                return self._create_point(empty[0], empty[1])
+
         return "pass"
     
     """
@@ -37,19 +40,20 @@ class Player(object):
             rule_checker = RuleChecker()
             if rule_checker.verify_play(self.stone, empty, copy.deepcopy(boards)):
                 new_board = rule_checker.play_move(self.stone, empty, copy.deepcopy(boards[0]))
-                opp_stone_count_before = len(boards[0].get_points(self._get_opponent_stone(self.stone)))
-                opp_stone_count_after = len(new_board.get_points(self._get_opponent_stone(self.stone)))
-                if opp_stone_count_after < opp_stone_count_before:
-                    return True
-                boards.insert(0, new_board)
-                if len(boards)>4: boards.pop()
-                curr_board = Board(boards[0])
-                curr_empties = curr_board.get_points(" ")
-
-                for empty in curr_empties:
-                    if self.choose_move(boards, n-1, empty): return True
+                if self.check_if_capture(new_board, boards[0]) == True: return True
+                else:
+                    boards.insert(0, new_board)
+                    if len(boards)>4: boards.pop()
+                    curr_empties = new_board.get_points(" ")
+                    for empty in curr_empties:
+                        if self.choose_move(boards, n-1, empty): return True
         return False
 
+    def check_if_capture(self, new_board, old_board):
+        opp_stone_count_before = len(old_board.get_points(self._get_opponent_stone(self.stone)))
+        opp_stone_count_after = len(new_board.get_points(self._get_opponent_stone(self.stone)))
+        if opp_stone_count_after < opp_stone_count_before: return True
+        else: return False
 
 
 
