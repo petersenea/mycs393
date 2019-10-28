@@ -23,28 +23,44 @@ class InterfaceWrapper(object):
         return self.ret_value
         
     """
-        input_ takes the format [Stone, Move] or Board
+        input_ takes the format ["register"], ["receive-stones", Stone], or ["make-a-move", Boards]
         verifies the input_:
             (1) is a list
-            (2) is either of length 2 or a Board
+            (2) is either of length 1 or 2
             (3) The Board is a valid Board
             (4) The Stone is a valid Stone
             (5) The Move is a valid Move
     """
     def _verify_input_(self, input_):
-
         if type(input_) != list: 
-            raise BaseException("input_ is not of type list.")
+                raise BaseException("input_ is not of type list.")
+        
+        for i in range(len(input_)):
+            if i == 0:
+                if len(input_[i]) == 1:
+                    if input_[i][0] != "register":
+                        raise BaseException("input_[0] is of length 1, but is not 'register'.")
+                else:
+                    raise BaseException("input_[0] is not of length 1.")
+            elif i == 1:
+                if len(input_[i]) == 2:
+                    if input_[i][0] == "receive-stones":
+                        self._check_stone(input_[i][1])
+                    else:
+                        raise BaseException("input_[1] is not a valid 'receive-stones'")
+                else:
+                    BaseException("input_ is of length 2, but is otherwise invalid.")
+            else:
+                if len(input_[i]) == 2:            
+                    if input_[i][0] == "make-a-move":
+                        self._check_boards(input_[i][1])
+                    else:
+                        raise BaseException("input_[1] is not a valid 'make-a-move'")
+                
+                else:
+                    BaseException("input_ is of length 2, but is otherwise invalid.")
 
-        if len(input_) == 2:
-            # check if valid Stone:
-            self._check_stone(input_[0])
-            # check if valid Move:
-            self._check_move(input_[1])
-
-        else:
-            self._verify_board(input_)
-            
+                         
     """
         verifies the board_array:
             (1) is the correct size

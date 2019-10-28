@@ -1,7 +1,6 @@
 from interface_wrapper import InterfaceWrapper
 import sys
 import json
-from game import Game
 
 json_list = []
 
@@ -25,6 +24,6 @@ while len(str_json)>0:
 
 # ret_list = [InterfaceWrapper(obj).ret() for obj in json_list]
 
-ret_list = Game(json_list).ret()
+ret_list = InterfaceWrapper(json_list).ret()
 
 sys.stdout.write(json.dumps(ret_list))

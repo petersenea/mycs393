@@ -5,85 +5,28 @@ import numpy as np
 
 class RuleChecker(object):
     """
-        input_ is either [Stone, Move] or Board
-    """
-    def __init__(self, input_):
-        if len(input_) == 2:
-            if input_[1] == "pass":
-                self.ret_value = True
-            else:
-                self.ret_value = self._verify_play(input_)
-        else:
-            # calculate score of input_
-            self.ret_value = self._calc_score(Board(input_))
-
-    """
-        returns the result of the input 
-    """
-    def ret(self):
-        return self.ret_value
-
-    """
-        Calculates the score of a given board for each player
-        takes in:
-            * board: the game Board
-        returns:
-            * A dictionary containing the score
-    """ 
-    def _calc_score(self, board):
-        b_points = len(board.get_points('B'))
-        w_points = len(board.get_points('W'))
-        empty_spaces = board.get_points(' ')
-
-        #for every empty space not already checked, check to see if it and its neighbor chain is reachable by either opponent     
-        while len(empty_spaces) > 0:
-            space = empty_spaces.pop(0)
-
-            #find list of all the points with the same MaybeStone that the point is connected to, as they will all be reachable
-            #by the same MaybeStones
-            neighbor_chain = board.neighbor_chain(board.get_maybe_stone(space), [space], [space])
-            if board.is_reachable(space, 'B'):
-                if not board.is_reachable(space,'W'):
-                    b_points += len(neighbor_chain)
-            elif board.is_reachable(space,'W'):
-                w_points += len(neighbor_chain)
-
-            # do not need to check if each one of a chain is reachable, as they are already accounted for
-            # remove empty spaces that have already been checked
-            # can't do set manipulation because they are lists of lists
-            empty_spaces = [i for i in empty_spaces if i not in neighbor_chain]
-
-        return {"B": b_points, "W": w_points}
-
-    """
         creates a list from the given string representing a point
     """
     def _create_point(self, point):
         return [int(i) - 1 for i in point.split('-')]
     
-    """ CHANGED
+    """ CHANGED no longer validates game history
         takes in:
             * input_: represented by [stone, play] where play is [point, boards]
         returns:
             * True, if action and board history are valid
             * False, otherwise
     """
-    def _verify_play(self, input_):
-        stone = input_[0]
-        play = input_[1]
-        point = self._create_point(play[0])
-        boards = [Board(board) for board in play[1]]
+    def verify_play(self, stone, point, boards = []):
+
+        boards = [Board(board) for board in boards]
 
         #produce an error (False) or a new board with the new play
         next_board = self._play_move(stone, point, copy(boards[0]))
 
         #if play is valid (returns a board instead of false), check if ko rule is violated and if history is invalid
-        #if no rules are broken return true, else return false
         if next_board:
-            if len(boards) > 1 and self._ko_rule_violated(next_board, boards[1]): return False
-
-            # CHANGED THIS:
-            # else: return self._is_valid_game_history(stone, self._get_opponent_stone(stone), boards)
+            if (len(boards) > 1 and self._ko_rule_violated(next_board, boards[1])): return False
             else: return True
 
         else: return False
@@ -111,6 +54,7 @@ class RuleChecker(object):
     def is_valid_game_history(self, stone, boards):
         # ADDED THIS:
         # create opp-stone
+        boards = [Board(board) for board in boards]
         opp_stone = self._get_opponent_stone(stone)
 
         # check that every board has proper liberties first, if not the board history is invalid        
