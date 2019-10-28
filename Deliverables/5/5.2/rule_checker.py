@@ -12,14 +12,14 @@ class RuleChecker(object):
     
     """ CHANGED no longer validates game history
         takes in:
-            * input_: represented by [stone, play] where play is [point, boards]
+            * stone: Stone
+            * point: [x,y]
+            * boards: array of Boards
         returns:
-            * True, if action and board history are valid
+            * True, if action is valid
             * False, otherwise
     """
     def verify_play(self, stone, point, boards = []):
-
-        #boards = [Board(board) for board in boards]
 
         #produce an error (False) or a new board with the new play
         next_board = self.play_move(stone, point, copy.deepcopy(boards[0]))
@@ -45,7 +45,6 @@ class RuleChecker(object):
     """ CHANGED
         takes in:
             * stone: the Stone of the current player
-            * opp_stone: the Stone of the opponent
             * boards: an array of Board objects
         returns:
             * True, if history is valid
@@ -54,7 +53,6 @@ class RuleChecker(object):
     def is_valid_game_history(self, stone, boards):
         # ADDED THIS:
         # create opp-stone
-        #boards = [Board(board) for board in boards]
         opp_stone = self._get_opponent_stone(stone)
 
         # check that every board has proper liberties first, if not the board history is invalid        
