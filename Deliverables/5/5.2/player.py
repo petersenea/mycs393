@@ -13,20 +13,39 @@ class Player(object):
     """
     def make_a_move(self, boards):
         # check valid history
+        boards = [Board(x) for x in boards]
+        rule_checker = RuleChecker()
+        if not rule_checker.is_valid_game_history(self.stone, boards):
+            return "This history makes no sense!"
+        curr_board = boards[0]
+        curr_empties = curr_board.get_points(" ")
+    
+        for empty in curr_empties:
+            boardstemp = copy.deepcopy(boards)
+            if self.choose_move(boardstemp, self.n, empty):
+                return self._create_point(empty[0], empty[1])
+        for empty in curr_empties:
+            if rule_checker.verify_play(self.stone, empty, boards):
+                return self._create_point(empty[0], empty[1])
+
+        return "pass"
+        '''
         rule_checker = RuleChecker()
         if not rule_checker.is_valid_game_history(self.stone, [Board(x) for x in boards]):
             return "This history makes no sense!"
         curr_board = Board(boards[0])
         curr_empties = curr_board.get_points(" ")
-
+    
         for empty in curr_empties:
-            if self.choose_move(boards, self.n, empty):
+            boardstemp = [Board(x) for x in boards]
+            if self.choose_move(boardstemp, self.n, empty):
                 return self._create_point(empty[0], empty[1])
         for empty in curr_empties:
             if rule_checker.verify_play(self.stone, empty, [Board(x) for x in boards]):
                 return self._create_point(empty[0], empty[1])
 
         return "pass"
+        '''
     
     """
         returns the Point object for the coordinate integers point_x and point_y
@@ -36,9 +55,8 @@ class Player(object):
     
     def choose_move(self, boards, n, empty):
         if n > 0:
-            boards = [Board(x) for x in boards]
             rule_checker = RuleChecker()
-            if rule_checker.verify_play(self.stone, empty, copy.deepcopy(boards)):
+            if rule_checker.verify_play(self.stone, empty, boards):
                 new_board = rule_checker.play_move(self.stone, empty, copy.deepcopy(boards[0]))
                 if self.check_if_capture(new_board, boards[0]) == True: return True
                 else:
