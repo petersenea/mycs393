@@ -13,7 +13,7 @@ class InterfaceWrapper(object):
     STONES = ['B', 'W']
     MAYBE_STONES = STONES + [" "]
     """
-        input_array takes the format [board, statement]
+        input_array takes the format of a giant json obj array
     """
     def __init__(self, input_):
         self._verify_input_(input_)
@@ -23,13 +23,12 @@ class InterfaceWrapper(object):
         return self.ret_value
         
     """
-        input_ takes the format ["register"], ["receive-stones", Stone], or ["make-a-move", Boards]
+        input_ takes the format [["register"], ["receive-stones", Stone], ["make-a-move", Boards], ...]
         verifies the input_:
             (1) is a list
-            (2) is either of length 1 or 2
-            (3) The Board is a valid Board
-            (4) The Stone is a valid Stone
-            (5) The Move is a valid Move
+            (2) first element is a ["register"]
+            (3) second element is a ["receive-stones", Stone]
+            (4) third element on is a ["make-a-move", Boards]
     """
     def _verify_input_(self, input_):
         if type(input_) != list: 
@@ -74,19 +73,6 @@ class InterfaceWrapper(object):
                 if not all(x in self.MAYBE_STONES for x in row):
                     raise BaseException("board_array does not have valid contents.")
    
-    """
-        verifies that a given Point is valid
-    """
-    def _check_point(self, point):
-        point = point.split("-")
-        if len(point) != 2:
-            raise BaseException("Point should have 2 indexes.")
-        try:
-            point = [int(i) for i in point]
-        except:
-            raise BaseException("Point indexes should be numbers.")
-        if 1 > point[0] > self.BOARD_SIZE or 1 > point[1] > self.BOARD_SIZE:
-            raise BaseException('Points are not on board')
 
     """
         verifies that a given Stone is a valid Stone
@@ -102,17 +88,6 @@ class InterfaceWrapper(object):
     def _check_maybe_stone(self, stone):
         if stone not in self.MAYBE_STONES:
             raise BaseException("not a valid MaybeStone.")
-
-    """
-        verifies that a Move is a valid Move
-    """
-    def _check_move(self, move):
-        if len(move) == 2:
-            # check [Point, Boards]
-            self._check_point(move[0])
-            self._check_boards(move[1])
-        elif move != "pass":
-            raise BaseException("Move is not valid.")
 
     """
         verifies that 
