@@ -1,7 +1,7 @@
 from board import Board
 import numpy as np
 
-
+#CHANGED: put in its own class with its on file
 class ScoreCalculator(object):
     def __init__(self, board):
         self.board = Board(board)
@@ -16,7 +16,7 @@ class ScoreCalculator(object):
     def calculate_score(self):
         b_points = len(self.board.get_points('B'))
         w_points = len(self.board.get_points('W'))
-        empty_spaces = self.board.get_points(' ')
+        empty_spaces = self.board.get_empty_spots()
 
         #for every empty space not already checked, check to see if it and its neighbor chain is reachable by either opponent     
         while len(empty_spaces) > 0:
